@@ -75,7 +75,7 @@ public class Image {
     
     @Override
     /**
-     * Retourne le chemin de l'image sous forme de chaine de caractere
+     * Retourne le nom de l'image sous forme de chaine de caractere
      * @return (String)
      */
     public String toString() {
