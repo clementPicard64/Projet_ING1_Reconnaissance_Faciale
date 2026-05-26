@@ -49,7 +49,7 @@ public class Matrice{
 		for (int i = 0; i < B.A.length; i++) {
 			moy_ligne = 0;
 	        for (int j = 0; j < A.length; j++) {
-	        	moy_ligne = moy_ligne + B.A[i].vecteur[j];
+	        	moy_ligne = (float) (moy_ligne + B.A[i].vecteur[j]);
 	        }
 	        J.vecteur[i] = moy_ligne/A.length;
 		}

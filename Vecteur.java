@@ -1,12 +1,12 @@
 public class Vecteur {
 	
-	private int[] vecteur;
+	double[] vecteur;
 	
 	public  Vecteur(int dimension) {
-		this.vecteur = new int[dimension];
+		this.vecteur = new double[dimension];
 	}
 	
-	public  Vecteur(int[] valeur) {
+	public  Vecteur(double[] valeur) {
 		this.vecteur = valeur;
 	}
 
@@ -16,14 +16,14 @@ public class Vecteur {
 		 * @author Yassine
 		 * @param visageMoyen tableau 1D
 		 */
-		int[] tabmoy = visageMoyen.getVecteur();
+		double[] tabmoy = visageMoyen.getVecteur();
 		
 		for(int i = 0; i< this.vecteur.length; i++) {
 			this.vecteur[i] -= tabmoy[i];
 		}
 	}
 
-	private int[] getVecteur() {
+	private double[] getVecteur() {
 		return null;
 	}
 }
