@@ -11,7 +11,11 @@ public class Vecteur {
 	}
 
 	public void centraliser(Vecteur visageMoyen) {
-		
+		/*
+		 * Fonction centralise les vecteurs
+		 * @author Yassine
+		 * @param visageMoyen tableau 1D
+		 */
 		int[] tabmoy = visageMoyen.getVecteur();
 		
 		for(int i = 0; i< this.vecteur.length; i++) {
