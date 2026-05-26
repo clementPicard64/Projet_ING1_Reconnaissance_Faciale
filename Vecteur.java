@@ -1,5 +1,3 @@
-package Projet;
-
 public class Vecteur {
 	
 	private int[] vecteur;
