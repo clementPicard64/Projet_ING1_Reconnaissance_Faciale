@@ -1,37 +1,58 @@
 public class Matrice{
 	
 	private Vecteur[] A; // matrice
-	private int n,m;
 	
-	public Matrice(double[][] a) {
+	public Matrice(Vecteur[] a) {
 		A = a;
-		n=100;
-		m=100;
 	}
 	
-	public double[][] getA() {
+	public Matrice() {
+	}
+	
+	public Vecteur[] getA() {
 		return A;
 	}
 
-	public void setA(double[][] a) {
+	public void setA(Vecteur[] a) {
 		A = a;
 	}
 	
-	public double[][] calculTransposee(Vecteur[] A) {
+	private Matrice calculTransposee(Vecteur[] A) {
 		/*
 		 * Fonction calculant la transposée de A
 		 * @author Dorian
-		 * @param A tableau 2D
-		 * @return B tableau 2D transposée de A
+		 * @param A tableau de vecteurs
+		 * @return B tableau de vecteurs, transposée de A
 		 */
-	    double Vecteur[] B = null;
+	    Matrice B = new Matrice();
 
 	    for (int i = 0; i < A.length; i++) {
-	        for (int j = i + 1; j < A.length; j++) {
-	            B[i][j] = A[j][i];
-	            B[j][i] = A[i][j];
+	        for (int j = i + 1; j < A[0].vecteur.length; j++) {
+	            B.A[i].vecteur[j] = A[j].vecteur[i];
+	            B.A[j].vecteur[i] = A[i].vecteur[j];
 	        }
 	    }   
 	    return B;
+	}
+	
+	public Vecteur calculVisageMoyen() {
+		/*
+		 * Fonction calculant le visage moyen
+		 * @author Dorian
+		 * @param A tableau de vecteurs
+		 * @return J vecteur de l'image moyenne
+		 */
+		Matrice B = calculTransposee(A);
+		Vecteur J= new Vecteur(A.length);
+		float moy_ligne;
+		
+		for (int i = 0; i < B.A.length; i++) {
+			moy_ligne = 0;
+	        for (int j = 0; j < A.length; j++) {
+	        	moy_ligne = moy_ligne + B.A[i].vecteur[j];
+	        }
+	        J.vecteur[i] = moy_ligne/A.length;
+		}
+		return J;
 	}
 }
