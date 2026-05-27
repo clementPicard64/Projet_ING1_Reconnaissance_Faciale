@@ -99,7 +99,7 @@ public class Image {
     /**
      * 2
      * @author Clément
-	 *Redimentionne l'image
+	 *Redimentionne l'image en 100x100
      */
     public void redimensionner() {
         BufferedImage redim = new BufferedImage(100, 100, this.img.getType());
