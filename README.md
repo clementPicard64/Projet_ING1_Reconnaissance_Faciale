@@ -13,7 +13,7 @@ Ceci est un tutoriel pour utiliser la bibliothèque contenant les fonctions qui 
 
 5. Dans la barre de gauche appuyez sur  Java Build Path
 
-6. Une page apparaît avec une barre en haut qui contient plusieurs options
+6. Une page apparaît avec une barre en haut qui contient plusieurs options,
    Appuyez sur libraries
 	
 7. Appuyez sur ClassPath
