@@ -23,7 +23,11 @@ public class Vecteur {
 		}
 	}
 
-	private double[] getVecteur() {
-		return null;
+	public double[] getVecteur() {
+		return vecteur;
+	}
+
+	public void setVecteur(double[] vecteur) {
+		this.vecteur = vecteur;
 	}
 }
