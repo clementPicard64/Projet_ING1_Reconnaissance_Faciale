@@ -1,5 +1,6 @@
 package code;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
@@ -11,26 +12,24 @@ public class Image {
 	private BufferedImage img; //img stockée avec BufferedImage
 	
 	//private boolean estDeReference;
-	private int largeurImage; //Largeur de l'image 
-	private int hauteurImage; //Longueur de l'image 
 	private String cheminImage; //Chemin de l'image
 	private double[][] matriceImage; //Matrice de l'image (tableau 2D)
 	private Vecteur vecteurImage; //Vecteur colonne de l'image de type de la classe Vecteur
 	
 	
 	/**
-	 * 
+	 * 1
 	 * @author Clément
 	 * @param Chemin : chemin de l'image 
 	 * @throws IOException (ajout de l'exception plus tard)
+	 * 
 	 */
 	public Image(String id,String CheminPersonne) throws IOException {
 		this.id = id;
-		this.cheminImage = CheminPersonne+ "/" + id;
+		this.cheminImage = CheminPersonne + id + ".png";
 		this.img = ImageIO.read(new File(this.cheminImage));
-		this.largeurImage = this.img.getWidth();
-		this.hauteurImage = this.img.getHeight();	
-		this.matriceImage = new double[this.hauteurImage][this.largeurImage];
+		//this.largeurImage = this.img.getWidth();
+		//this.hauteurImage = this.img.getHeight();	
 	}
 	
 	/**
@@ -42,13 +41,14 @@ public class Image {
         return this.img;
     }
     
-    /**
+    /**3
      * @author Clément 
      * Procédure permettant de convertir la matrice en niveau de gris 
      */
     public void convertirEnNiveauDeGris() {
-        for (int y = 0; y < this.hauteurImage; y++) {
-            for (int x = 0; x < this.largeurImage; x++) {
+    	this.matriceImage = new double[100][100];
+        for (int y = 0; y < 100; y++) {
+            for (int x = 0; x < 100; x++) {
             	int pixel = this.img.getRGB(x, y);
                 int r = (pixel >> 16) & 0xFF;
                 int g = (pixel >> 8)  & 0xFF;
@@ -59,14 +59,16 @@ public class Image {
         }
     }
     
-    /**
+    /**4
+     * @author Clément
      * Procédure permettant de vectoriser la matrice (transformation en vecteur colonne)
+     * 
      */
     public void vectoriser() {
     	int cpt = 0;
-    	double[] tab = new double[this.hauteurImage * this.largeurImage];
-    	for (int y = 0; y < this.hauteurImage; y++) {
-            for (int x = 0; x < this.largeurImage; x++) {
+    	double[] tab = new double[10000];
+    	for (int y = 0; y < 100; y++) {
+            for (int x = 0; x < 100; x++) {
             	tab[cpt] = this.matriceImage[y][x];
             	cpt += 1;
             }
@@ -76,6 +78,7 @@ public class Image {
     
     @Override
     /**
+     * @author Clément
      * Retourne le nom de l'image sous forme de chaine de caractere
      * @return (String)
      */
@@ -85,12 +88,24 @@ public class Image {
     
     
    /**
+    * @author Clément
     * Retourne le vecteur colonne associé à l'image
     * @return (Vecteur) 
     */
-    public Vecteur getVecteurImage() {
-    	return this.vecteurImage;
+    public double[] getVecteurImage() {
+    	return this.vecteurImage.getVecteur();
     }
     
-    
+    /**
+     * 2
+     * @author Clément
+	 *Redimentionne l'image
+     */
+    public void redimensionner() {
+        BufferedImage redim = new BufferedImage(100, 100, this.img.getType());
+        java.awt.Graphics2D g = redim.createGraphics(); //Dessinne l'image redim avec g 
+        g.drawImage(this.img.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 100x100,et la met dans redim
+        g.dispose(); //Libere l'espace utlisé par g
+        this.img = redim;
+    }
 }
