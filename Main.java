@@ -15,16 +15,13 @@ public class Main {
         Vecteur visageMoyen = matrice.calculVisageMoyen();
         System.out.println("\nVISAGE MOYEN");
         afficherVecteur(visageMoyen);
+        
 
-        System.out.println("\nCENTRALISATION DES VECTEURS");
+        Vecteur[] v = matrice.centrerDonnees();
+        Matrice matriceCentree = new Matrice(v);
 
-        for (Vecteur v : tableauVecteurs) {
-            v.centraliser(visageMoyen);
-            afficherVecteur(v);
-        }
-
-        System.out.println("\n MATRICE CENTRALISÉE ");
-        afficherMatrice(matrice);
+        System.out.println("\nMATRICE CENTRÉE");
+        afficherMatrice(matriceCentree);
 
         System.out.println("\n MATRICE DE COVARIANCE DES IMAGES");
 
@@ -52,7 +49,7 @@ public class Main {
 
     public static void afficherMatrice(Matrice m) {
 
-        Vecteur[] lignes = m.getA();
+        Vecteur[] lignes = m.getMatrice();
 
         for (Vecteur v : lignes) {
             afficherVecteur(v);

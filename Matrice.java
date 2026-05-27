@@ -1,26 +1,32 @@
+/*
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.SingularValueDecomposition;
+*/
+
 public class Matrice {
 
-    private Vecteur[] A;
+    private Vecteur[] M;
     private int n; // nombre d'images
     private int m; // nombre de pixels
 
     public Matrice(Vecteur[] a) {
-        A = a;
-        n = A.length;
-        m = A[0].vecteur.length;
+        M = a;
+        n = M.length;
+        m = M[0].vecteur.length;
     }
 
     public Matrice() {
     }
 
-    public Vecteur[] getA() {
-        return A;
+    public Vecteur[] getMatrice() {
+        return M;
     }
 
     public void setA(Vecteur[] a) {
-        A = a;
-        n = A.length;
-        m = A[0].vecteur.length;
+        M = a;
+        n = M.length;
+        m = M[0].vecteur.length;
     }
 
     public int getN() {
@@ -31,82 +37,133 @@ public class Matrice {
         return m;
     }
 	
-    private Matrice calculTransposee(Vecteur[] A) {
+    private Matrice calculTransposee(Vecteur[] M) {
+    	/**
+		 * Fonction calculant la transposée de M
+		 * @author Dorian
+		 * @param M le tableau de vecteurs
+		 * @return MT la transposée
+		 */
 
     	//initialisation de la matrice transposée
-        Vecteur[] AT = new Vecteur[m];
+        Vecteur[] MT = new Vecteur[m];
         for (int i = 0; i<m; i++) {
-            AT[i] = new Vecteur(n);
+            MT[i] = new Vecteur(n);
         }
 
         for (int i = 0; i<n; i++) {
             for (int j = 0; j < m; j++) {
-                AT[j].vecteur[i] = A[i].vecteur[j];
+                MT[j].vecteur[i] = M[i].vecteur[j];
             }
         }
 
-        return new Matrice(AT);
+        return new Matrice(MT);
     }
 	
 	public Vecteur calculVisageMoyen() {
-		/*
+		/**
 		 * Fonction calculant le visage moyen
 		 * @author Dorian
 		 * @return J vecteur de l'image moyenne
 		 */
 		
-		Matrice B = calculTransposee(A);
+		Matrice B = calculTransposee(M); //travail sur la transposée pour faciliter le calcul
 		Vecteur J = new Vecteur(m);
 		
 		float moy_ligne;
 		for (int i = 0; i<m; i++) {
 			moy_ligne = 0;
 	        for (int j = 0; j<n; j++) {
-	        	moy_ligne = (float) (moy_ligne + B.A[i].vecteur[j]);
+	        	moy_ligne = (float) (moy_ligne + B.M[i].vecteur[j]); //somme des premiers pixels de chaque image
 	        }
 	        J.vecteur[i] = moy_ligne/n;
 		}
 		return J;
 	}
 	
-	public Matrice MatriceCovariance() {
-		/*
-		 * Fonction calculant A*A^T la matrice de covariance des images
-		 * @author Dorian
-		 * @return W la matrice de covariance des images
-		 */
-		
-		//initialisation de la matrice
-		Vecteur[] AAT = new Vecteur[n];
-		for (int i = 0; i<n; i++) {
-	        AAT[i] = new Vecteur(n);
-	    }
-		
-		//calcul de la matrice terme par terme
-		double somme;
-		for (int i = 0; i<n; i++) {
-	        for (int j = 0; j<n; j++) {
-	        	somme = 0;
-	        	for (int k=0; k<m; k++) {
-	        		somme += A[i].vecteur[k]*A[j].vecteur[k];
-	        	}
-        		AAT[i].vecteur[j] = somme;
-	        }
-		}
-		return new Matrice(AAT);
-		
-	}
 
-		/**
+
+	/**
 	 * centrerDonnees soustrait le visage moyen à chaque vecteur de la base
 	 * @author Célia
 	 */
-	//MAJ LE DIAGRAMME
-	public void centrerDonnees() {
-		Vecteur v = this.calculVisageMoyen(); //calcul du visage moyen v 
+	public Vecteur[] centrerDonnees() {
+		Vecteur moy = this.calculVisageMoyen(); //calcul du visage moyen v 
+		Vecteur[] W = new Vecteur[n]; 
 		
-		for (Vecteur v1 : this.getA()) { //pour chaque vect de la matrice totale
-			v1.centraliser(v); //on centralise le visage moyen
+		for (int i=0; i<n; i++) { //pour chaque vect de la matrice totale
+			W[i] = new Vecteur(M[i].getVecteur().clone()); //clonage du vecteur, sinon on centralise un vecteur null
+			W[i].centraliser(moy); //on centralise le visage moyen
 		}
+		return W;
 	}
+	
+	public Matrice MatriceCovariance() {
+		/**
+		 * Fonction calculant M*M^T la matrice de covariance des images
+		 * @author Dorian
+		 * @return la matrice de covariance des images
+		 */
+			
+		//calcul de la matrice terme par terme
+		Vecteur[] W= this.centrerDonnees();
+		Vecteur[] C = new Vecteur[n];
+		
+		double somme;
+		for (int i=0; i<n; i++) {
+			C[i] = new Vecteur(n); //initialisation des vecteurs de taille n, sinon éléments null
+	        for (int j=0; j<n; j++) {
+	        	somme = 0;
+	        	for (int k=0; k<m; k++) {
+	        		somme += W[i].vecteur[k]*W[j].vecteur[k]; //formule pour calculer l'élément de la i-ème ligne et j-ième colonne
+	        	}
+        		C[i].vecteur[j] = somme;
+	        }
+		}
+		return new Matrice(C);
+	}
+	
+	public double[][] tableau2D () {
+		/**
+		 * Fonction qui transforme notre matrice en un tableau 2D pour pouvoir utiliser la fonction SVD de la bibliothèque
+		 * @author Yassine
+		 * @return le tableau 2D avec les valeurs de M
+		 */
+		double[][] tab2D = new double[n][m]; // transformer en une liste de flotant
+			
+		for (int i=0; i < n; i++) {
+			for (int j=0; j < m; j++){
+				tab2D[i][j] = this.M[i].vecteur[j];
+				}	
+			}
+			return tab2D;		
+	}
+
+	/*
+	public Matrice extraireEigenfaces(int k) {	
+		// SVD
+		double[][] p = tableau2D();
+		
+		RealMatrix matrix = new Array2DRowRealMatrix(p);
+		SingularValueDecomposition svd = new SingularValueDecomposition(matrix);
+			
+		double[] val_sing = svd.getSingularValues();	
+		double[] val_propre = new double[val_sing.length];
+			
+		for (int i = 0; i< val_sing.length; i++) {
+			val_propre[i] = Math.sqrt(val_sing[i]);
+		}
+		
+		RealMatrix U = svd.getU();
+		
+		int nbVecteurPropre = U.getColumnDimension();
+		int taille = U.getRowDimension();
+		
+		double[][] vecteursPropres = new double[nbVecteurPropre][taille];
+		
+		for (int j=0; j< nbVecteurPropre; j++) {
+			vecteursPropres[j] = U.getColumn(j);
+		}	
+	}
+	*/
 }
