@@ -15,6 +15,8 @@ public class Database {
 	private double[] valeursPropres; //MODIFIER DANS LE DIAGRAMME
 	//POUR STOCKER LES IMAGES DE LA BASE
 	private Image[] images; //MODIFIER DANS LE DIAGRAMME
+	//UTILE DANS PROJETER MATRICE
+	private double[][] projections; //MODIFIER DANS LE DIAGRAMME
 	
 	private Matrice engenfaces;
 	private Matrice matriceTotal;
@@ -31,6 +33,7 @@ public class Database {
 		taille = 0; 
 		valeursPropres = null;
 		images = null;
+		projections = null;
 	}
 	
 	/**
@@ -83,45 +86,51 @@ public class Database {
 	}
 	
 	/**
-	 * centrerDonnees soustrait le visage moyen à chaque vecteur de la base
+	 * projeterImage méthode qui prends une image en parametre et retourne un tableau de double
+	 * @return un tableau de double
+	 * @param img une image
 	 */
-	public void centrerDonnees() {
-		matriceTotal = getMatriceTotal();
-		Vecteur v = matriceTotal.calculVisageMoyen(); //calcul du visage moyen v 
+	//MAJ DANS LE DIAGRAMME
+	public double[] projeterImage(Image img) {
+		Vecteur v = img.getVecteurImage(); //recup le vect de img
+		double[] tab = new double[engenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
 		int i = 0;
 		
-		for (Vecteur v1 : matriceTotal) { //pour chaque vect de matriceTotal 
-			v1[i] = centraliser(v); //on centralise le visage moyen
+		for (Vecteur e : engenfaces.getA()) {//ppur chauqe eigenface dans engenfaces.getA()
+			tab[i] = e.produitScalaire(v); //stocker chaque prod scalaire du vect img dans le tab
 			i++;
-			
-			
+		}
+	    return tab;
+	}
+	
+	/**
+	 * projeterMatrice méthode qui prends toutes les images de la base en parametre et retourne un tableau de double
+	 */
+	public void projeterMatrice() {
+		projections = new double[taille][]; //initialiser projections
+		int index = 0;
+		
+		for (Image i : images) { //pour chaque image 
+			projections[index] = projeterImage(i); 
+			index++;
 		}
 	}
 	
 	/**
-	 * projeterImage méthode qui prends une image en parametre et retourne un tableau d'entier
-	 * @return un tableau d'entier
-	 * @param img une image
-	 */
-	public int[] projeterImage(Image img) {
-	    return null; // A FAIRE
-	}
-	
-	/**
-	 * projeterMatrice méthode qui projete la matrice
-	 */
-	public void projeterMatrice() {
-		// A FAIRE
-	}
-	
-	/**
-	 * ajouterNouvellePersonne méthode qui ajoute une personne
+	 * ajouterNouvellePersonne méthode qui ajoute une personne et son image a la base
 	 * @param p une personne 
 	 * @param une image
 	 */
-	public void ajouterNouvellePersonne(Personne p, Image img) {
-		// A FAIRE
+	public void ajouterNouvellePersonne(Personne personne, Image img) {
+		Image[] newImages = new Image[taille + 1]; //agrandit le tableau images[] de 1
+		
+		for (int i = 0; i < taille; i++) {
+		    newImages[i] = images[i]; //on met tous les elements de images[] dans le nouveaux tab
+		}
+		p.add(personne); //ajoute la personne a la liste
+		newImages[taille] = img; //on ajoute img a la fin
+		taille = taille +1; //maj la taille du tab
+		images = newImages; //on maj le tab de base
 	}
 	
 }
-
