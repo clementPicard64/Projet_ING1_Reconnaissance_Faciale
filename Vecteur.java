@@ -37,6 +37,7 @@ public class Vecteur {
 	 * @param autre un vecteur
 	 * @return somme un double
 	 */
+	//MAJ DIAGRAMME
 	public double produitScalaire(Vecteur autre) {
 	    double somme = 0;
 	    for (int i = 0; i < this.vecteur.length; i++) {
