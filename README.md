@@ -1,7 +1,7 @@
 
 #CalculSVD()
 
-Ceci est un tutoriel pour utiliser la bibliothèque contenant les fonctions qui sert à la décomposition en valeurs singulières
+Ceci est un tutoriel pour utiliser la bibliothèque contenant les fonctions qui servent à la décomposition en valeurs singulières.
 
 1.téléchargez la bibliothéque en copiant ce lien sur votre navigateur--> https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar
 
