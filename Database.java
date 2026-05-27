@@ -12,6 +12,7 @@ import java.util.List;
 public class Database {
 	private String cheminBaseReference;
 	private int taille;
+	@SuppressWarnings("unused")
 	private double[] valeursPropres; //MODIFIER DANS LE DIAGRAMME
 	//POUR STOCKER LES IMAGES DE LA BASE
 	private Image[] images; //MODIFIER DANS LE DIAGRAMME
@@ -19,7 +20,9 @@ public class Database {
 	private double[][] projections; //MODIFIER DANS LE DIAGRAMME
 	
 	private Matrice engenfaces;
+	@SuppressWarnings("unused")
 	private Matrice matriceTotal;
+	@SuppressWarnings("unused")
 	private Vecteur visageMoyen;
 	private List<Personne> p;
 	
@@ -96,7 +99,7 @@ public class Database {
 		double[] tab = new double[engenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
 		int i = 0;
 		
-		for (Vecteur e : engenfaces.getA()) {//ppur chauqe eigenface dans engenfaces.getA()
+		for (Vecteur e : engenfaces.getMatrice()) {//ppur chauqe eigenface dans engenfaces.getMatrice()
 			tab[i] = e.produitScalaire(v); //stocker chaque prod scalaire du vect img dans le tab
 			i++;
 		}
