@@ -6,15 +6,15 @@
 
 2. Sur votre Compilateur JAVA (Eclipse IDE) allez sur Package Explorer
 
-3. sélectionnez votre projet 
+3. Sélectionnez votre projet 
 
-4. appuyez sur propriétés
+4. Appuyez sur propriétés (properties)
 
-5. dans la barre de gauche appuyez sur  Java Build Path
+5. Dans la barre de gauche appuyez sur  Java Build Path
 
-6. une page qui apparaît avec barre en haut qui contient plusieurs option
-	appuyez sur libraries
+6. Une page apparaît avec une barre en haut qui contient plusieurs options
+   Appuyez sur libraries
 	
-7. vous aurez ModulePath et Classpath qui s'affichent, appuyez sur ClassPath
+7. Appuyez sur ClassPath
 
 8. Cliquez sur Add External JARS... à droite et puis séléctionnez votre librairy, puis confirmez avec Apply and Close
