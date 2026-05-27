@@ -96,4 +96,17 @@ public class Matrice {
 		return new Matrice(AAT);
 		
 	}
+
+		/**
+	 * centrerDonnees soustrait le visage moyen à chaque vecteur de la base
+	 * @author Célia
+	 */
+	//MAJ LE DIAGRAMME
+	public void centrerDonnees() {
+		Vecteur v = this.calculVisageMoyen(); //calcul du visage moyen v 
+		
+		for (Vecteur v1 : this.getA()) { //pour chaque vect de la matrice totale
+			v1.centraliser(v); //on centralise le visage moyen
+		}
+	}
 }
