@@ -30,6 +30,7 @@ public class Image {
 		this.img = ImageIO.read(new File(this.cheminImage));
 		this.largeurImage = this.img.getWidth();
 		this.hauteurImage = this.img.getHeight();	
+		this.matriceImage = new double[this.hauteurImage][this.largeurImage];
 	}
 	
 	/**
