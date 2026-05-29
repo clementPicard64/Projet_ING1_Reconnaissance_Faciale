@@ -159,8 +159,13 @@ public class Matrice {
 	    return new Matrice(W);
 	}
 
-	public Matrice extraireEigenfaces(int k) {	
-		// SVD
+	public Matrice extraireEigenfaces(int k) {
+		/**
+		 * Fonction qui permet de récupérer les k premiers eigenfaces de la matrice de covariance
+		 * @param entier k
+		 * @author Yassine
+		 * @return Matrice contenant les k premiers eigenfaces
+		 */
 		double[][] p = matriceEnTableau2D(MatriceCovariance());
 		
 		RealMatrix matrix = new Array2DRowRealMatrix(p);
