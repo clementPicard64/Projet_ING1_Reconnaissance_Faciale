@@ -119,21 +119,5 @@ public class Image {
         this.img = redim;
     }
     
-
-   
-    /**
-     * Test avec 1 photo
-     * @param args
-     * @throws IOException 
-     */
-    /**
-    public static void main(String[] args) throws IOException {
-    	Image Benji = new Image("Benji","/home/cytech/Projet/");
-    	Benji.redimensionner();
-    	Benji.convertirEnNiveauDeGris();
-    	Benji.vectoriser();
-    	System.out.println(Arrays.toString(Benji.getVecteurImage())); //import java.util.Arrays; pour print les vecteurs
-    }*/
-    
     
 }
