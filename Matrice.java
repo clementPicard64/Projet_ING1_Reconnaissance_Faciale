@@ -1,8 +1,9 @@
+package projet;
+
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
-
 
 public class Matrice {
 
@@ -123,43 +124,44 @@ public class Matrice {
 		return new Matrice(C);
 	}
 	
-	public double[][] tableau2D () {
+	public double[][] matriceEnTableau2D (Matrice C) {
 		/**
-		 * Fonction qui transforme notre matrice en un tableau 2D pour pouvoir utiliser la fonction SVD de la bibliothèque
+		 * Fonction qui transforme notre matrice carrée en un tableau 2D pour pouvoir utiliser la fonction SVD de la bibliothèque
 		 * @author Yassine
 		 * @return le tableau 2D avec les valeurs de M
 		 */
-		double[][] tab2D = new double[n][m]; // transformer en une liste de flotant
+		double[][] tab2D = new double[n][n]; // transformer en une liste de flotant
 			
 		for (int i=0; i < n; i++) {
-			for (int j=0; j < m; j++){
-				tab2D[i][j] = this.M[i].vecteur[j];
+			for (int j=0; j < n; j++){
+				tab2D[i][j] = C.M[i].vecteur[j];
 				}	
 			}
 			return tab2D;		
 	}
-
+	
 	public Matrice tableau2DEnMatrice(double[][] tab) {
 		/**
-		 * Fonction qui transforme notre un tableau 2D en matrice 
+		 * Fonction qui transforme notre un tableau 2D en matrice carrée
 		 * @param tab tableau 2D
 		 * @author Dorian
 		 * @return Matrice M
 		 */
-		Vecteur
-		Vecteur[] W = new Vecteur[n];
-		for (int i=0; i<n; i++) { //pour chaque vect de la matrice totale
-			W[i] = new Vecteur(M[i].getVecteur().clone()); //clonage du vecteur, sinon on centralise un vecteur null
-			for (int j=0; j<m; j++) {
-				W[i].vecteur[j] = tab[i][j];
-			}
-		}
-		return new Matrice(W);
+	    int lignes = tab.length;
+	    int colonnes = tab[0].length;
+	    Vecteur[] W = new Vecteur[lignes];
+	    for (int i = 0; i < lignes; i++) {
+	        W[i] = new Vecteur(colonnes);
+	        for (int j = 0; j < colonnes; j++) {
+	            W[i].vecteur[j] = tab[i][j];
+	        }
+	    }
+	    return new Matrice(W);
 	}
 
 	public Matrice extraireEigenfaces(int k) {	
 		// SVD
-		double[][] p = matriceEnTableau2D();
+		double[][] p = matriceEnTableau2D(MatriceCovariance());
 		
 		RealMatrix matrix = new Array2DRowRealMatrix(p);
 		SingularValueDecomposition svd = new SingularValueDecomposition(matrix);
@@ -168,7 +170,8 @@ public class Matrice {
 		double[] val_propre = new double[val_sing.length];
 			
 		for (int i = 0; i< val_sing.length; i++) {
-			val_propre[i] = Math.sqrt(val_sing[i]);
+			val_propre[i] = Math.pow(val_sing[i],2);
+			System.out.println(val_sing[i]);
 		}
 		
 		RealMatrix U = svd.getU();
@@ -205,6 +208,5 @@ public class Matrice {
 		}
 		return tableau2DEnMatrice(eigenfaces);
 	}
-		return eingenfaces;
-	}
+
 }
