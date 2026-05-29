@@ -148,13 +148,14 @@ public class ReconnaissanceFaciale {
 	 * @return un double
 	 * @param img une Image
 	 */
-	public double calculeDistance(double[] vecteur) {
+	public double calculeDistance(Vecteur vecteur) {
 		
-		double[] vecteurTest = this.img.getVecteurImage();
+		double[] vecteurTest = this.img.getVecteurImage().getVecteur();
+		double[] tabVecteur = vecteur.getVecteur();
 		double somme = 0;
 		
-		for (int i = 0; i < vecteur.length; i++) {
-			somme += Math.pow(vecteurTest[i] - vecteur[i], 2);
+		for (int i = 0; i < tabVecteur.length; i++) {
+			somme += Math.pow(vecteurTest[i] - tabVecteur[i], 2);
 		}
 		somme = Math.sqrt(somme);
 		return somme;
