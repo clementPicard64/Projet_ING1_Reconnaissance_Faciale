@@ -22,13 +22,31 @@ public class ReconnaissanceFaciale {
 	}
 	
 	/**
-	 * reconstruire methode qui prend un tableau d'entier et un entier et retourne un tableau d'entier
-	 * @return un tableau d'entier
+     * CONSTRUCTEUR
+     * @param img une image
+     */
+	public ReconnaissanceFaciale(Image img) {
+		this.img = img;
+	}
+	
+	/**
+	 * reconstruire methode qui prend un tableau de double et un entier et retourne un tableau de double
+	 * @return un tableau de double
 	 * @param vecteurProjete un tableau d'entier
 	 * @param K un entier
 	 */
 	public double[] reconstruire(double[] vecteurProjete, int K) {
-		return null;  // A FAIRE
+		Matrice matrice = new Matrice();
+		Matrice V = matrice.extraireEigenfaces(K);
+		double[] z_k;
+		for (int i=0; i<matrice.getM(); i++) {
+			double somme = 0;
+			for (int j=0; j<K; j++) {
+				somme = somme + vecteurProjete[i]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
+			}
+			z_k[i] = somme;
+		}
+		return z_k; 
 	}
 	
 	/**
@@ -53,12 +71,41 @@ public class ReconnaissanceFaciale {
 	}
 	
 	/**
-	 * evaluerTauxIdentification prends une liste d'images et renvoie un double
-	 * @return un double
-	 * @param baseTest une liste d'images
+	 * evaluerTauxIdentification prend une liste d'images et renvoie un double. Evalue le seuil de distance nécessaire pour que les images soient reconnues
+	 * @return un double (le seuil)
+	 * @param baseTest une liste d'images projetées dans la nouvelle base censées être reconnues par notre reconnaissance faciale
 	 */
 	public double evaluerTauxIdentification(List<Image> baseTest) {
-		return 0;  // A FAIRE
+		double[] dist = new double[baseTest.size()];
+		int i=0;
+		List<Personne> p;
+		try {
+			p = database.getListPersonne();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (Image I : baseTest) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
+			ReconnaissanceFaciale rf = new ReconnaissanceFaciale(I); //objet pour calculer la distance
+			for (Personne P : p) {
+				ArrayList<Image> L = ((Personne) p).getListImage(); //on récupère la liste des images par personne
+				double min = rf.calculeDistance(L.get(0)); //on définit le minimum au premier élément
+				for (Image J : ((Personne) p).getListImage()) { //boucle sur toutes les images
+					if (min>rf.calculeDistance(J)) {
+						min = rf.calculeDistance(J);
+					}
+				}
+				dist[i] = min;
+			}
+			i++;
+		}
+		double seuil=dist[0]; //on cherche le seuil le plus grand
+		for (int j=0; j<i; j++) {
+			if (dist[i] > seuil){
+				seuil=dist[i];
+			}
+		}
+		return 1.2*seuil; // erreur anticipée du calcul du seuil de 20%
 	}
 	
 	/**

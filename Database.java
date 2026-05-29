@@ -72,6 +72,14 @@ public class Database {
 		return cheminBaseReference;
 	}
 	
+	 /**
+     * GETTER p
+     * @return liste de personnes
+     */
+	public List<Personne> getListPersonne() {
+		return p;
+	}
+	
 	/**
 	 * getMatriceTotal méthode construit une mat a partir de tous les vecteurs des images
 	 * @return une Matrice qui contient tous les vecteursImages

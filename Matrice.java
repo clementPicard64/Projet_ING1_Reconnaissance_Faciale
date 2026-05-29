@@ -1,8 +1,8 @@
-/*
+
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
-*/
+
 
 public class Matrice {
 
@@ -139,7 +139,6 @@ public class Matrice {
 			return tab2D;		
 	}
 
-	/*
 	public Matrice extraireEigenfaces(int k) {	
 		// SVD
 		double[][] p = tableau2D();
@@ -165,5 +164,4 @@ public class Matrice {
 			vecteursPropres[j] = U.getColumn(j);
 		}	
 	}
-	*/
 }
