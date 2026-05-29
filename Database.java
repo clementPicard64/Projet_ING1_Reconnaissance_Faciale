@@ -14,11 +14,11 @@ public class Database {
 	private String cheminBaseReference;
 	private int taille;
 	@SuppressWarnings("unused")
-	private double[] valeursPropres; //MODIFIER DANS LE DIAGRAMME
+	private double[] valeursPropres;
 	//POUR STOCKER LES IMAGES DE LA BASE
-	private Image[] images; //MODIFIER DANS LE DIAGRAMME
+	private Image[] images; 
 	//UTILE DANS PROJETER MATRICE
-	private double[][] projections; //MODIFIER DANS LE DIAGRAMME
+	private double[][] projections; 
 	
 	private Matrice engenfaces;
 	@SuppressWarnings("unused")
@@ -94,7 +94,6 @@ public class Database {
 	 * @return un tableau de double
 	 * @param img une image
 	 */
-	//MAJ DANS LE DIAGRAMME
 	public double[] projeterImage(Image img) {
 		Vecteur v = img.getVecteurImage(); //recup le vect de img
 		double[] tab = new double[engenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
