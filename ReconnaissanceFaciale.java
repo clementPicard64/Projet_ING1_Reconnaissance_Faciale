@@ -78,7 +78,7 @@ public class ReconnaissanceFaciale {
 	public double evaluerTauxIdentification(List<Image> baseTest) {
 		double[] dist = new double[baseTest.size()];
 		int i=0;
-		List<Personne> p;
+		List<Personne> p = null;
 		try {
 			p = database.getListPersonne();
 		} catch (Exception e) {
@@ -88,11 +88,11 @@ public class ReconnaissanceFaciale {
 		for (Image I : baseTest) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
 			ReconnaissanceFaciale rf = new ReconnaissanceFaciale(I); //objet pour calculer la distance
 			for (Personne P : p) {
-				ArrayList<Image> L = ((Personne) p).getListImage(); //on récupère la liste des images par personne
-				double min = rf.calculeDistance(L.get(0)); //on définit le minimum au premier élément
-				for (Image J : ((Personne) p).getListImage()) { //boucle sur toutes les images
-					if (min>rf.calculeDistance(J)) {
-						min = rf.calculeDistance(J);
+				ArrayList<Image> L = ((Personne) P).getListImage(); //on récupère la liste des images par personne
+				double min = rf.calculeDistance(L.get(0).getVecteurImage()); //on définit le minimum au premier élément
+				for (Image J : ((Personne) P).getListImage()) { //boucle sur toutes les images
+					if (min>rf.calculeDistance(J.getVecteurImage())) {
+						min = rf.calculeDistance(J.getVecteurImage());
 					}
 				}
 				dist[i] = min;
