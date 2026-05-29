@@ -14,11 +14,11 @@ public class Database {
 	private String cheminBaseReference;
 	private int taille;
 	@SuppressWarnings("unused")
-	private double[] valeursPropres;
+	private double[] valeursPropres; //MODIFIER DANS LE DIAGRAMME
 	//POUR STOCKER LES IMAGES DE LA BASE
-	private Image[] images; 
+	private Image[] images; //MODIFIER DANS LE DIAGRAMME
 	//UTILE DANS PROJETER MATRICE
-	private double[][] projections; 
+	private double[][] projections; //MODIFIER DANS LE DIAGRAMME
 	
 	private Matrice engenfaces;
 	@SuppressWarnings("unused")
@@ -94,6 +94,7 @@ public class Database {
 	 * @return un tableau de double
 	 * @param img une image
 	 */
+	//MAJ DANS LE DIAGRAMME
 	public double[] projeterImage(Image img) {
 		Vecteur v = img.getVecteurImage(); //recup le vect de img
 		double[] tab = new double[engenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
@@ -124,25 +125,42 @@ public class Database {
 	 * @param p une personne 
 	 * @param une image
 	 */
-	public void ajouterNouvellePersonne(Personne personne, Image img) {
+	public void ajouterNouvellePersonne(String nom, String prenom, File img) {
+		if (p == null) { // Si c'est la premiere personne de la base d'images 
+	        p = new ArrayList<Personne>();
+	    }
 		Image[] newImages = new Image[taille + 1]; //agrandit le tableau images[] de 1
-		
 		for (int i = 0; i < taille; i++) {
 		    newImages[i] = images[i]; //on met tous les elements de images[] dans le nouveaux tab
 		}
 		// Création du dossier de la personne - Ajout Clement
-	    File dossier = new File(personne.getCheminPersonne());
+		String chemin = "/home/cytech/Projet/" + nom + "_" + prenom; //On créé le chemin
+	    File dossier = new File(chemin); 
+	    Personne personne = null;
+	    
 	    if (!dossier.exists()) {
-	        dossier.mkdirs();
+	        dossier.mkdirs(); //On crée le dossier
+		    //On créé la personne
+		    personne = new Personne(nom,prenom);
+		    p.add(personne); //ajoute la personne a la liste
 	    }
 	    
-	    if (p == null) {
-	        p = new ArrayList<Personne>();
+	    else {
+	    	for (Personne pers : this.p) {
+	    		if ((pers.getNom().equals(nom)) && (pers.getPrenom().equals(prenom))) {
+	    			personne = pers;
+	    			
+	    		}
+	    	}
 	    }
+	    
+	    personne.ajouterImage(img);
+	    
+	    int n = personne.getListImage().size();
+	    Image image = personne.getListImage().get(n-1); //Dans le cas ou il y a plusieurs images
 	    // Fin Ajout Clement
 	    
-		p.add(personne); //ajoute la personne a la liste
-		newImages[taille] = img; //on ajoute img a la fin
+		newImages[taille] = image; //on ajoute img a la fin
 		taille = taille +1; //maj la taille du tab
 		images = newImages; //on maj le tab de base
 	}
