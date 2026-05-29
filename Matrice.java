@@ -139,9 +139,27 @@ public class Matrice {
 			return tab2D;		
 	}
 
-	public double[][] extraireEigenfaces(int k) {	
+	public Matrice tableau2DEnMatrice(double[][] tab) {
+		/**
+		 * Fonction qui transforme notre un tableau 2D en matrice 
+		 * @param tab tableau 2D
+		 * @author Dorian
+		 * @return Matrice M
+		 */
+		Vecteur
+		Vecteur[] W = new Vecteur[n];
+		for (int i=0; i<n; i++) { //pour chaque vect de la matrice totale
+			W[i] = new Vecteur(M[i].getVecteur().clone()); //clonage du vecteur, sinon on centralise un vecteur null
+			for (int j=0; j<m; j++) {
+				W[i].vecteur[j] = tab[i][j];
+			}
+		}
+		return new Matrice(W);
+	}
+
+	public Matrice extraireEigenfaces(int k) {	
 		// SVD
-		double[][] p = tableau2D();
+		double[][] p = matriceEnTableau2D();
 		
 		RealMatrix matrix = new Array2DRowRealMatrix(p);
 		SingularValueDecomposition svd = new SingularValueDecomposition(matrix);
@@ -181,10 +199,12 @@ public class Matrice {
 		RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma);
 		RealMatrix V = V_bis.multiply(matriceSigmaInverse);
 		
-		double[][] eingenfaces  = new double[k][l];
+		double[][] eigenfaces  = new double[k][l];
 		for (int n=0; n<k; n++) {
-			eingenfaces[n] = V.getColumn(n);
+			eigenfaces[n] = V.getColumn(n);
 		}
+		return tableau2DEnMatrice(eigenfaces);
+	}
 		return eingenfaces;
 	}
 }
