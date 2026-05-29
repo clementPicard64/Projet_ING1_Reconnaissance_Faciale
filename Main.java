@@ -1,3 +1,4 @@
+package projet;
 public class Main {
 
     public static void main(String[] args) {
@@ -30,6 +31,15 @@ public class Main {
             afficherMatrice(covariance);
         } catch (Exception e) {
             System.out.println("Erreur lors du calcul de la covariance : " + e.getMessage());
+        }
+        
+        System.out.println("\nVALEURS PROPRES ET EIGENFACES");
+
+        try {
+            Matrice eigenfaces = matrice.extraireEigenfaces(4);
+            afficherMatrice(eigenfaces);
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'extraction des eigenfaces : " + e.getMessage());
         }
     }
 
