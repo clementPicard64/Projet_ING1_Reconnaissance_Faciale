@@ -217,6 +217,14 @@ public class Image {
     public BufferedImage getImage() {
         return this.img;
     }
+
+	    /**
+     * @author Clement
+     * @return le chemin de l'image 
+     */
+    public String getCheminImage() {
+    	return this.cheminImage;
+    }
     
     /**
      * 2
@@ -230,14 +238,6 @@ public class Image {
         g.drawImage(this.img.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 100x100,et la met dans redim
         g.dispose(); //Libere l'espace utlisé par g
         this.img = redim;
-    }
-    
-    /**
-     * @author Clement
-     * @return le chemin de l'image 
-     */
-    public String getCheminImage() {
-    	return this.cheminImage;
     }
     
 }
