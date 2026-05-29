@@ -2,6 +2,7 @@ package projet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList; //AJout Clément
 import java.util.List;
 
 /**
@@ -72,14 +73,6 @@ public class Database {
 		return cheminBaseReference;
 	}
 	
-	 /**
-     * GETTER p
-     * @return liste de personnes
-     */
-	public List<Personne> getListPersonne() {
-		return p;
-	}
-	
 	/**
 	 * getMatriceTotal méthode construit une mat a partir de tous les vecteurs des images
 	 * @return une Matrice qui contient tous les vecteursImages
@@ -138,10 +131,20 @@ public class Database {
 		for (int i = 0; i < taille; i++) {
 		    newImages[i] = images[i]; //on met tous les elements de images[] dans le nouveaux tab
 		}
+		// Création du dossier de la personne - Ajout Clement
+	    File dossier = new File(personne.getCheminPersonne());
+	    if (!dossier.exists()) {
+	        dossier.mkdirs();
+	    }
+	    
+	    if (p == null) {
+	        p = new ArrayList<Personne>();
+	    }
+	    // Fin Ajout Clement
+	    
 		p.add(personne); //ajoute la personne a la liste
 		newImages[taille] = img; //on ajoute img a la fin
 		taille = taille +1; //maj la taille du tab
 		images = newImages; //on maj le tab de base
 	}
-	
 }
