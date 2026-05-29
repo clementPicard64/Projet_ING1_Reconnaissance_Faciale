@@ -1,13 +1,13 @@
 package projet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Description : gère les interactions avec l'utilisateur
- * @author CandyCelia
- * @version 1.0
  */
 public class ReconnaissanceFaciale {
+	
 	private double seuil;
 	private Database database;
 	private Image img;
@@ -16,8 +16,9 @@ public class ReconnaissanceFaciale {
      * CONSTRUCTEUR
      * @param seuil un double
      */
-	public ReconnaissanceFaciale(double seuil) {
+	public ReconnaissanceFaciale(double seuil, Database database) {
 		this.seuil = seuil;
+		this.database = database;
 	}
 	
 	/**
@@ -36,7 +37,19 @@ public class ReconnaissanceFaciale {
 	 * @param imageTest une image
 	 */
 	public String identifier(Image imageTest) {
-		return "";  // A FAIRE
+		
+		this.img = imageTest;
+		
+		Image res = calculerPlusCourtDistance();
+
+        if (res == null) {
+            return "Inconnu";
+        }
+        double distance  = calculeDistance(res.getVecteurImage());
+        if (diffDistanceSeuil(distance)) {
+        	return "Inconnu";
+        }
+        return res.getCheminImage();
 	}
 	
 	/**
@@ -53,15 +66,34 @@ public class ReconnaissanceFaciale {
 	 * @return une image
 	 */
 	public Image calculerPlusCourtDistance() {
-		return null;  // A FAIRE
+		
+		double minDistance = -1;
+		Image imagePlusProche = null;
+		
+		List<Image> toutesLesImages = new ArrayList<>();
+		for (Personne personne : database.getListPersonne() ) {
+			toutesLesImages.addAll(personne.getListImage());
+		}
+
+        for (int i = 0; i < toutesLesImages.size(); i++) {
+
+            double nouvelleDistance = calculeDistance(toutesLesImages.get(i).getVecteurImage());
+
+            if (minDistance == -1 || nouvelleDistance < minDistance) {
+                minDistance = nouvelleDistance;
+                imagePlusProche = toutesLesImages.get(i);
+            }
+        }
+
+		return imagePlusProche;
 	}
 	
 	/**
 	 * diffDistanceSeuil retourne un booleen
 	 * @return vrai ou faux
 	 */
-	public Boolean diffDistanceSeuil() {
-		return false;  // A FAIRE
+	public Boolean diffDistanceSeuil(double distance) {
+        return distance < this.seuil;
 	}
 	
 	/**
@@ -69,8 +101,16 @@ public class ReconnaissanceFaciale {
 	 * @return un double
 	 * @param img une Image
 	 */
-	public double calculeDistance(Image img) {
-		return 0;  // A FAIRE
+	public double calculeDistance(double[] vecteur) {
+		
+		double[] vecteurTest = this.img.getVecteurImage();
+		double somme = 0;
+		
+		for (int i = 0; i < vecteur.length; i++) {
+			somme += Math.pow(vecteurTest[i] - vecteur[i], 2);
+		}
+		somme = Math.sqrt(somme);
+		return somme;
 	}
 
 }
