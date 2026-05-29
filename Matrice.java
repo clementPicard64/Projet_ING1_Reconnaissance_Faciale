@@ -139,7 +139,7 @@ public class Matrice {
 			return tab2D;		
 	}
 
-	public Matrice extraireEigenfaces(int k) {	
+	public double[][] extraireEigenfaces(int k) {	
 		// SVD
 		double[][] p = tableau2D();
 		
@@ -155,13 +155,36 @@ public class Matrice {
 		
 		RealMatrix U = svd.getU();
 		
-		int nbVecteurPropre = U.getColumnDimension();
-		int taille = U.getRowDimension();
+		int l = U.getColumnDimension();
+		int c = U.getRowDimension();
 		
-		double[][] vecteursPropres = new double[nbVecteurPropre][taille];
+		double[][] vecteursPropres = new double[l][c];
 		
-		for (int j=0; j< nbVecteurPropre; j++) {
-			vecteursPropres[j] = U.getColumn(j);
-		}	
+		for (int j=0; j< l; j++) {
+			vecteursPropres[j] = U.getColumn(j);				
+		}
+		
+		RealMatrix VSigma = svd.getV().multiply(svd.getS());
+		RealMatrix Wt = VSigma.multiply(svd.getUT());
+		RealMatrix V_bis = Wt.multiply(U);
+		
+		double [] inverseSigma = new double[val_sing.length];
+		for (int h = 0; h< val_sing.length; h++ ) {
+			if (val_sing[h] != 0) {
+				inverseSigma[h] = 1.0/val_sing[h];
+			}
+			else {
+				inverseSigma[h] = 0.0;
+			}
+		}
+
+		RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma);
+		RealMatrix V = V_bis.multiply(matriceSigmaInverse);
+		
+		double[][] eingenfaces  = new double[k][l];
+		for (int n=0; n<k; n++) {
+			eingenfaces[n] = V.getColumn(n);
+		}
+		return eingenfaces;
 	}
 }
