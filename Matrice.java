@@ -1,7 +1,7 @@
 package projet;
 
-import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 
@@ -124,7 +124,7 @@ public class Matrice {
 		return new Matrice(C);
 	}
 	
-	public double[][] matriceEnTableau2D (Matrice C) {
+	public double[][] matriceEnTableau2D (Vecteur[] w) {
 		/**
 		 * Fonction qui transforme notre matrice carrée en un tableau 2D pour pouvoir utiliser la fonction SVD de la bibliothèque
 		 * @author Yassine
@@ -134,7 +134,7 @@ public class Matrice {
 			
 		for (int i=0; i < n; i++) {
 			for (int j=0; j < n; j++){
-				tab2D[i][j] = C.M[i].vecteur[j];
+				tab2D[i][j] = w[i].vecteur[j];
 				}	
 			}
 			return tab2D;		
@@ -158,24 +158,16 @@ public class Matrice {
 	    }
 	    return new Matrice(W);
 	}
-
-	public Matrice extraireEigenfaces(int k) {
-		/**
-		 * Fonction qui permet de récupérer les k premiers eigenfaces de la matrice de covariance
-		 * @param entier k
-		 * @author Yassine
-		 * @return Matrice contenant les k premiers eigenfaces
-		 */
-		double[][] p = matriceEnTableau2D(MatriceCovariance());
+	
+	public Matrice extraireEigenfaces(int k) {	
+		Vecteur[] W = this.centrerDonnees(); //on part de la matrice centrée
+		double[][] p = matriceEnTableau2D(W); // qu'on transforme en tableau 2D pour utiliser la bibliothèque
 		
 		RealMatrix matrix = new Array2DRowRealMatrix(p);
 		SingularValueDecomposition svd = new SingularValueDecomposition(matrix);
 			
-		double[] val_sing = svd.getSingularValues();	
-		double[] val_propre = new double[val_sing.length];
-			
-		for (int i = 0; i< val_sing.length; i++) {
-			val_propre[i] = Math.pow(val_sing[i],2);
+		double[] val_sing = svd.getSingularValues();
+		for (int i=0; i<val_sing.length; i++) {
 			System.out.println(val_sing[i]);
 		}
 		
@@ -184,7 +176,7 @@ public class Matrice {
 		int l = U.getColumnDimension();
 		int c = U.getRowDimension();
 		
-		double[][] vecteursPropres = new double[l][c];
+		double[][] vecteursPropres = new double[c][l];
 		
 		for (int j=0; j< l; j++) {
 			vecteursPropres[j] = U.getColumn(j);				
@@ -213,5 +205,6 @@ public class Matrice {
 		}
 		return tableau2DEnMatrice(eigenfaces);
 	}
+
 
 }
