@@ -7,33 +7,46 @@ import org.apache.commons.math3.linear.SingularValueDecomposition;
 
 public class Matrice {
 
-    private Vecteur[] M;
+    private Vecteur[] M; //tableau de vecteurs (matrice)
     private int n; // nombre d'images
     private int m; // nombre de pixels
 
+    /**
+     * CONSTRUCTEUR
+     * @param a le tableau de vecteurs
+     */
     public Matrice(Vecteur[] a) {
         M = a;
         n = M.length;
         m = M[0].vecteur.length;
     }
 
+    /**
+     * CONSTRUCTEUR VIDE
+     */
     public Matrice() {
     }
 
+    /**
+     * GETTER M
+     * @return M tableau de vecteurs
+     */
     public Vecteur[] getMatrice() {
         return M;
     }
 
-    public void setA(Vecteur[] a) {
-        M = a;
-        n = M.length;
-        m = M[0].vecteur.length;
-    }
-
+    /**
+     * GETTER n
+     * @return n le nombre d'images
+     */
     public int getN() {
         return n;
     }
 
+    /**
+     * GETTER m
+     * @return m le nombre de pixels par image
+     */
     public int getM() {
         return m;
     }
@@ -49,12 +62,12 @@ public class Matrice {
     	//initialisation de la matrice transposée
         Vecteur[] MT = new Vecteur[m];
         for (int i = 0; i<m; i++) {
-            MT[i] = new Vecteur(n);
+            MT[i] = new Vecteur(n); //initialisation de ses éléments
         }
 
         for (int i = 0; i<n; i++) {
             for (int j = 0; j < m; j++) {
-                MT[j].vecteur[i] = M[i].vecteur[j];
+                MT[j].vecteur[i] = M[i].vecteur[j]; //inversion de place de tous les éléments
             }
         }
 
@@ -71,13 +84,13 @@ public class Matrice {
 		Matrice B = calculTransposee(M); //travail sur la transposée pour faciliter le calcul
 		Vecteur J = new Vecteur(m);
 		
-		float moy_ligne;
-		for (int i = 0; i<m; i++) {
-			moy_ligne = 0;
+		float somme_ligne;
+		for (int i = 0; i<m; i++) { //boucle pour calculer la moyenne pour chaque pixel
+			somme_ligne = 0;
 	        for (int j = 0; j<n; j++) {
-	        	moy_ligne = (float) (moy_ligne + B.M[i].vecteur[j]); //somme des premiers pixels de chaque image
+	        	somme_ligne = (float) (somme_ligne + B.M[i].vecteur[j]); //somme des premiers pixels de chaque image
 	        }
-	        J.vecteur[i] = moy_ligne/n;
+	        J.vecteur[i] = somme_ligne/n; //on divise par le nombre d'images pour obtenir la moyenne
 		}
 		return J;
 	}
@@ -99,30 +112,6 @@ public class Matrice {
 		return W;
 	}
 	
-	public Matrice MatriceCovariance() {
-		/**
-		 * Fonction calculant M*M^T la matrice de covariance des images
-		 * @author Dorian
-		 * @return la matrice de covariance des images
-		 */
-			
-		//calcul de la matrice terme par terme
-		Vecteur[] W= this.centrerDonnees();
-		Vecteur[] C = new Vecteur[n];
-		
-		double somme;
-		for (int i=0; i<n; i++) {
-			C[i] = new Vecteur(n); //initialisation des vecteurs de taille n, sinon éléments null
-	        for (int j=0; j<n; j++) {
-	        	somme = 0;
-	        	for (int k=0; k<m; k++) {
-	        		somme += W[i].vecteur[k]*W[j].vecteur[k]; //formule pour calculer l'élément de la i-ème ligne et j-ième colonne
-	        	}
-        		C[i].vecteur[j] = somme;
-	        }
-		}
-		return new Matrice(C);
-	}
 	
 	public double[][] matriceEnTableau2D (Vecteur[] w) {
 		/**
@@ -130,11 +119,11 @@ public class Matrice {
 		 * @author Yassine
 		 * @return le tableau 2D avec les valeurs de M
 		 */
-		double[][] tab2D = new double[n][n]; // transformer en une liste de flotant
+		double[][] tab2D = new double[n][n]; // initialisation du tableau
 			
 		for (int i=0; i < n; i++) {
 			for (int j=0; j < n; j++){
-				tab2D[i][j] = w[i].vecteur[j];
+				tab2D[i][j] = w[i].vecteur[j]; //conversion élément par élément
 				}	
 			}
 			return tab2D;		
@@ -142,69 +131,66 @@ public class Matrice {
 	
 	public Matrice tableau2DEnMatrice(double[][] tab) {
 		/**
-		 * Fonction qui transforme notre un tableau 2D en matrice carrée
+		 * Fonction qui transforme un tableau 2D en matrice carrée
 		 * @param tab tableau 2D
 		 * @author Dorian
 		 * @return Matrice M
 		 */
-	    int lignes = tab.length;
+	    int lignes = tab.length; //récupération des dimensions
 	    int colonnes = tab[0].length;
-	    Vecteur[] W = new Vecteur[lignes];
+	    Vecteur[] W = new Vecteur[lignes]; //initialisation du tableau de vecteurs
 	    for (int i = 0; i < lignes; i++) {
-	        W[i] = new Vecteur(colonnes);
+	        W[i] = new Vecteur(colonnes); //initialisation des vecteurs
 	        for (int j = 0; j < colonnes; j++) {
-	            W[i].vecteur[j] = tab[i][j];
+	            W[i].vecteur[j] = tab[i][j]; //conversion élément par élément
 	        }
 	    }
 	    return new Matrice(W);
 	}
 	
 	public Matrice extraireEigenfaces(int k) {	
-		Vecteur[] W = this.centrerDonnees(); //on part de la matrice centrée
-		double[][] p = matriceEnTableau2D(W); // qu'on transforme en tableau 2D pour utiliser la bibliothèque
-		
-		RealMatrix matrix = new Array2DRowRealMatrix(p);
-		SingularValueDecomposition svd = new SingularValueDecomposition(matrix);
-			
-		double[] val_sing = svd.getSingularValues();
-		for (int i=0; i<val_sing.length; i++) {
-			System.out.println(val_sing[i]);
-		}
-		
-		RealMatrix U = svd.getU();
-		
-		int l = U.getColumnDimension();
-		int c = U.getRowDimension();
-		
-		double[][] vecteursPropres = new double[c][l];
-		
-		for (int j=0; j< l; j++) {
-			vecteursPropres[j] = U.getColumn(j);				
-		}
-		
-		RealMatrix VSigma = svd.getV().multiply(svd.getS());
-		RealMatrix Wt = VSigma.multiply(svd.getUT());
-		RealMatrix V_bis = Wt.multiply(U);
-		
-		double [] inverseSigma = new double[val_sing.length];
-		for (int h = 0; h< val_sing.length; h++ ) {
-			if (val_sing[h] != 0) {
-				inverseSigma[h] = 1.0/val_sing[h];
-			}
-			else {
-				inverseSigma[h] = 0.0;
-			}
-		}
+	    Vecteur[] W = this.centrerDonnees(); //on part de la matrice centrée
+	    double[][] p = matriceEnTableau2D(W); // qu'on transforme en tableau 2D pour utiliser la bibliothèque
+	    
+	    RealMatrix matrix = new Array2DRowRealMatrix(p); //on crée une matrice reconnue par la bibliothèque
+	    SingularValueDecomposition svd = new SingularValueDecomposition(matrix); //on effectue la décomposition SVD
+	        
+	    double[] val_sing = svd.getSingularValues(); //on récupère les valeurs singulières
+	    for (int i=0; i<val_sing.length; i++) {
+	        System.out.println(val_sing[i]); //on les affiche
+	    }
+	    
+	    RealMatrix U = svd.getU(); //on récupère la matrice U contenant les vecteurs propres
+	    
+	    int l = U.getColumnDimension(); //nombre de colonnes de U
+	    int c = U.getRowDimension();    //nombre de lignes de U
+	    double[][] vecteursPropres = new double[c][l]; //initialisation du tableau des vecteurs propres
+	    
+	    for (int j=0; j< l; j++) {
+	        vecteursPropres[j] = U.getColumn(j); //on stocke chaque vecteur propre colonne par colonne		
+	    }
+	    
+	    RealMatrix VSigma = svd.getV().multiply(svd.getS()); //on calcule V * Sigma
+	    RealMatrix Wt = VSigma.multiply(svd.getUT());        //on calcule V * Sigma * U^T
+	    RealMatrix V_bis = Wt.multiply(U);                   //on calcule V * Sigma * U^T * U
+	    
+	    double[] inverseSigma = new double[val_sing.length]; //initialisation du tableau des inverses
+	    for (int h = 0; h < val_sing.length; h++) {
+	        if (val_sing[h] != 0) {
+	            inverseSigma[h] = 1.0/val_sing[h]; //on calcule l'inverse si la valeur est non nulle
+	        }
+	        else {
+	            inverseSigma[h] = 0.0; //on laisse 0 pour éviter la division par zéro
+	        }
+	    }
 
-		RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma);
-		RealMatrix V = V_bis.multiply(matriceSigmaInverse);
-		
-		double[][] eigenfaces  = new double[k][l];
-		for (int n=0; n<k; n++) {
-			eigenfaces[n] = V.getColumn(n);
-		}
-		return tableau2DEnMatrice(eigenfaces);
+	    RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma); //on crée la matrice diagonale de Sigma^-1
+	    RealMatrix V = V_bis.multiply(matriceSigmaInverse); //on obtient la matrice des eigenfaces V
+	    
+	    double[][] eigenfaces = new double[k][l]; //on initialise le tableau pour les k premières eigenfaces
+	    for (int n=0; n<k; n++) {
+	        eigenfaces[n] = V.getColumn(n); //on extrait les k premières colonnes
+	    }
+	    return tableau2DEnMatrice(eigenfaces); //on retourne les eigenfaces sous forme de Matrice
 	}
-
-
 }
