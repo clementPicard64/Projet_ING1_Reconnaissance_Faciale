@@ -101,8 +101,8 @@ public class ReconnaissanceFaciale {
 		}
 		double seuil=dist[0]; //on cherche le seuil le plus grand
 		for (int j=0; j<i; j++) {
-			if (dist[i] > seuil){
-				seuil=dist[i];
+			if (dist[j] > seuil){
+				seuil=dist[j];
 			}
 		}
 		return 1.2*seuil; // erreur anticipée du calcul du seuil de 20%
