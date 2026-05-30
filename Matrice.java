@@ -84,7 +84,7 @@ public class Matrice {
 		Matrice B = calculTransposee(M); //travail sur la transposée pour faciliter le calcul
 		Vecteur J = new Vecteur(m);
 		
-		float somme_ligne;
+		double somme_ligne;
 		for (int i = 0; i<m; i++) { //boucle pour calculer la moyenne pour chaque pixel
 			somme_ligne = 0;
 	        for (int j = 0; j<n; j++) {
