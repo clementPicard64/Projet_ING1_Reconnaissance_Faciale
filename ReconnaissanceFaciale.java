@@ -80,24 +80,28 @@ public class ReconnaissanceFaciale {
 		int i=0;
 		List<Personne> p = null;
 		try {
-			p = database.getListPersonne();
+			p = database.getListPersonne(); //récupération de la liste des personnes
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		for (Image I : baseTest) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
-			ReconnaissanceFaciale rf = new ReconnaissanceFaciale(I); //objet pour calculer la distance
-			for (Personne P : p) {
-				ArrayList<Image> L = ((Personne) P).getListImage(); //on récupère la liste des images par personne
-				double min = rf.calculeDistance(L.get(0).getVecteurImage()); //on définit le minimum au premier élément
-				for (Image J : ((Personne) P).getListImage()) { //boucle sur toutes les images
-					if (min>rf.calculeDistance(J.getVecteurImage())) {
-						min = rf.calculeDistance(J.getVecteurImage());
-					}
-				}
-				dist[i] = min;
-			}
-			i++;
+		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(I); //objet pour calculer la distance
+		    double minGlobal = -1; //on initialise le minimum global
+		    for (Personne P : p) {
+		        ArrayList<Image> L = ((Personne) P).getListImage(); //on récupère la liste des images par personne
+		        double min = rf.calculeDistance(L.get(0).getVecteurImage()); //on définit le minimum au premier élément
+		        for (Image J : ((Personne) P).getListImage()) { //boucle sur toutes les images
+		            if (min > rf.calculeDistance(J.getVecteurImage())) {
+		                min = rf.calculeDistance(J.getVecteurImage()); //on met à jour le minimum
+		            }
+		        }
+		        if (minGlobal == -1 || min < minGlobal) {
+		            minGlobal = min; //on garde le minimum toutes personnes confondues
+		        }
+		    }
+		    dist[i] = minGlobal; //on stocke la distance minimale pour cette image de test
+		    i++;
 		}
 		double seuil=dist[0]; //on cherche le seuil le plus grand
 		for (int j=0; j<i; j++) {
