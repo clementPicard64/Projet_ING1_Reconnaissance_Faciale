@@ -26,7 +26,7 @@ public class Image {
 	 */
 	public Image(String id,String CheminPersonne) throws IOException {
 		this.id = id;
-		this.cheminImage = CheminPersonne + "/" + id + ".png";
+		this.cheminImage = CheminPersonne + "/" + id;
 		this.img = ImageIO.read(new File(this.cheminImage));
 		//this.largeurImage = this.img.getWidth();
 		//this.hauteurImage = this.img.getHeight();	
