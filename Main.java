@@ -1,4 +1,7 @@
 package projet;
+
+import java.io.IOException;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -21,17 +24,17 @@ public class Main {
         Vecteur[] v = matrice.centrerDonnees();
         Matrice matriceCentree = new Matrice(v);
 
-        System.out.println("\nMATRICE CENTRÉE");
+        System.out.println("\nMATRICE CENTRÉE"); //celia
         afficherMatrice(matriceCentree);
 
-        System.out.println("\n MATRICE DE COVARIANCE DES IMAGES");
+/*        System.out.println("\n MATRICE DE COVARIANCE DES IMAGES");
 
         try {
             Matrice covariance = matrice.MatriceCovariance();
             afficherMatrice(covariance);
         } catch (Exception e) {
             System.out.println("Erreur lors du calcul de la covariance : " + e.getMessage());
-        }
+        }*/
         
         System.out.println("\nVALEURS PROPRES ET EIGENFACES");
 
@@ -40,6 +43,15 @@ public class Main {
             afficherMatrice(eigenfaces);
         } catch (Exception e) {
             System.out.println("Erreur lors de l'extraction des eigenfaces : " + e.getMessage());
+        }
+        
+        Database db = new Database("base_images/base_images/blanc_adam"); //celia
+        try {
+            db.chargerBase("base_images/base_images/blanc_adam");
+            System.out.println("Base chargée, taille : " + db.getTaille());
+            System.out.println("Chemin : " + db.getChemin());
+        } catch (IOException e) {
+            System.out.println("Erreur : " + e.getMessage());
         }
     }
 
