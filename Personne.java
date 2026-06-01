@@ -19,7 +19,7 @@ public class Personne {
 	public Personne(String nom, String prenom) {
 		this.nom = nom;
 		this.prenom = prenom;
-		this.cheminPersonne = "/?/projet/database/" +nom+ "_" +prenom;
+		this.cheminPersonne = "database/" + nom + "_" + prenom;
 		this.listImage = new ArrayList<Image>();
 	}
 
@@ -93,19 +93,26 @@ public class Personne {
 	*/
 	public void ajouterImage(File img) {
 		try {
-			//Création du nouveau nom du fichier
-			String nouveauNom = this.getNom() +"_"+ this.getPrenom() +"_"+ (this.getListImage().size()+1);
-			
-			//Création du chemin pour l'image
-			Path cheminImg = Paths.get(getCheminPersonne(), nouveauNom +".png");
+			//On s'assure que le dossier de la personne existe physiquement
+	        File dossierCible = new File(this.getCheminPersonne());
+	        if (!dossierCible.exists()) {
+	            dossierCible.mkdirs(); // Crée le dossier "database/Dupont_Jean" s'il n'existe pas
+	        }
+
+	        //Création du nouveau nom du fichier
+	        String nouveauNom = this.getNom() + "_" + this.getPrenom() + "_" + (this.getListImage().size() + 1) + ".png";
+	        
+	        //Création du chemin absolu/relatif complet pour la copie
+	        File fichierDestination = new File(dossierCible, nouveauNom);
 			
 			//On copie l'image dans le dossier
-			Files.copy(img.toPath(), cheminImg, StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(img.toPath(), fichierDestination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			
-			Image img2 = new Image(nouveauNom, this.getCheminPersonne());
+			Image img2 = new Image(nouveauNom, dossierCible.getAbsolutePath());
 			this.listImage.add(img2);
 			
 		}catch(IOException e) {
+			System.err.println("Impossible de copier ou lire l'image.");
 			e.printStackTrace();
 		}
 	}
