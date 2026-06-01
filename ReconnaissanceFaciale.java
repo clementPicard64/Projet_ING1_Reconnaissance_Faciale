@@ -36,10 +36,10 @@ public class ReconnaissanceFaciale {
 	 * @param K un entier
 	 */
 	public double[] reconstruire(double[] vecteurProjete, int K) {
-		Matrice matrice = new Matrice();
-		Matrice V = matrice.extraireEigenfaces(K);
-		double[] z_k;
-		for (int i=0; i<matrice.getM(); i++) {
+		//Matrice V = matrice.extraireEigenfaces(K);
+		Matrice V = database.getEngenfaces().extraireEigenfaces(K);
+		double[] z_k = new double[V.getM()];
+		for (int i=0; i< V.getM(); i++) {
 			double somme = 0;
 			for (int j=0; j<K; j++) {
 				somme = somme + vecteurProjete[i]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
