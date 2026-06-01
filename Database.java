@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Description : gère la base d'images de référence utilisée pour la reconnaissance faciale
  * @author CandyCelia
- * @version 2.0
+ * @version 3.0
  */
 public class Database {
 	private String cheminBaseReference;
@@ -79,6 +79,14 @@ public class Database {
      */
 	public List<Personne> getListPersonne() {
 		return p;
+	}
+	
+	 /**
+     * GETTER engenfaces
+     * @return engenfaces
+     */
+	public Matrice getEngenfaces() {
+	    return engenfaces;
 	}
 	
 	/**
