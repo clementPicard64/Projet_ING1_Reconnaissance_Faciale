@@ -1,3 +1,5 @@
+package projet;
+
 public class Vecteur {
 	
 	double[] vecteur;
