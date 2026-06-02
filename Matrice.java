@@ -150,7 +150,7 @@ public class Matrice {
 	
 	public Matrice extraireEigenfaces(int k) {	
 		/**
-		 * Fonction qui effectue une SVD sur la matrice contenant les images centrées et puis donne les k premières eigenfaces correspondant
+		 * Fonction qui effectue une SVD sur la matrice contenant les images centrées et puis donne les k premières eigenfaces correspondantes
 		 * @param entier k
 		 * @author Yassine
 		 * @return Matrice k x (taille des vecteurs)
