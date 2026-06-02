@@ -77,4 +77,16 @@ public class Main {
             afficherVecteur(v);
         }
     }
+
+    public static void main(String[] args) {
+		Database db = new Database("/home/cytech/Projet/base_images");
+		try {
+			db.chargerBase("/home/cytech/Projet/base_images");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		db.getListNomPersonne();
+		db.getListNomImage();
+		db.traiterImages();
+	}
 }
