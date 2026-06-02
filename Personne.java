@@ -18,11 +18,9 @@ public class Personne {
 	/** 
 	 * Constructeur de la classe personne. Initialisation de toutes les variable de la classe
 	 *
-	 * @param nom 
-	 *			String qui correspond au nom de la personne
+	 * @param nom est un String qui correspond au nom de la personne
 	 *
-	 * @param prenom 
-	 *			String qui correspond au prenom de la personne
+	 * @param prenom est un String qui correspond au prenom de la personne
 	*/
 	public Personne(String nom, String prenom) {
 		this.nom = nom;
@@ -34,8 +32,7 @@ public class Personne {
 	/** 
 	 * La fonction getPrenom() permet de renvoyer le prenom de la personne
 	 * 
-	 * @return prenom
-	 * 			Renvoie le prenom de la personne 
+	 * @return prenom est un String qui correspond au prenom de la personne 
 	 * 
 	*/
 	public String getPrenom() {
@@ -45,8 +42,7 @@ public class Personne {
 	/** 
 	 * La fonction getPrenom() permet de renvoyer le nom de la personne
 	 * 
-	 * @return nom
-	 * 			Renvoie le nom de la personne 
+	 * @return nom est un String qui correspond au nom de la personne
 	 * 
 	*/
 	public String getNom() {
@@ -56,8 +52,7 @@ public class Personne {
 	/** 
 	 * La fonction getPrenom() permet de renvoyer le chemin du dossier ou est rangé la personne
 	 * 
-	 * @return cheminPersonne
-	 * 			Renvoie le chemin des fichiers ou est ranger l'utilisateur de la personne 
+	 * @return cheminPersonne est un String qui represente le chemin des fichiers ou est ranger l'utilisateur de la personne 
 	 * 
 	*/
 	public String getCheminPersonne() {
@@ -67,8 +62,7 @@ public class Personne {
 	/** 
 	 * La fonction getListImage() permet de renvoyer la liste d'images associer à une personne
 	 * 
-	 * @return listImage
-	 * 			Liste d'Image de la personne (objet Image)
+	 * @return listImage une Liste d'Image de la personne (objet Image)
 	 * 
 	*/
 	public ArrayList<Image> getListImage() {
@@ -78,8 +72,7 @@ public class Personne {
 	/**
 	 * La fonction va permettre d'afficher les informations d'une personne
 	 *
-	 * @return res
-	 * 			Est le resultat du toString avec le descriptif de la personne
+	 * @return res est le resultat du toString avec le descriptif de la personne
 	*/
 	@Override
 	public String toString() {
@@ -106,8 +99,7 @@ public class Personne {
 	/**
 	 * Cette fct permet d'ajouter une nouvelle image à la personne de notre choix
 	 * 
-	 * @param img 
-	 * 			C'est File une image a ajouter à la personne 
+	 * @param img est un File, une image a ajouter à la personne 
 	*/
 	public void ajouterImage(File img) {
 		try {
