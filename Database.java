@@ -63,6 +63,7 @@ public class Database {
                 // Extraction du nom et prénom à partir du nom du dossier "Nom_Prenom"
                 String nomDossier = sousDossier.getName();
                 String[] parties = nomDossier.split("_");
+                if (parties.length <2) continue;
                 String nom;
                 nom = parties[0];
                 String prenom;
@@ -76,11 +77,9 @@ public class Database {
                 if (fichiersImages != null) {
                     for (File fichierImg : fichiersImages) {
                         if (fichierImg.isFile()) {
-                            Image img = new Image(fichierImg.getName(), sousDossier.getAbsolutePath());
-                            listeTemporaireImages.add(img);
-                            
-             
-                            personne.ajouterImage(fichierImg); 
+                            personne.ajouterImage(fichierImg);
+                            ArrayList<Image> imgs = personne.getListImage();
+                            listeTemporaireImages.add(imgs.get(imgs.size()-1));
                         }
                     }
                 }
@@ -248,7 +247,6 @@ public class Database {
 			this.vecteurs_image[cpt] = v;
 		}
 		this.matriceTotal = new Matrice(this.vecteurs_image);
-		this.matriceTotal.centrerDonnees();
 		this.engenfaces = this.matriceTotal.extraireEigenfaces(9);
 		afficherMatrice(engenfaces);
 		double[][] mat = new double[n][9];
