@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList; //Ajout Clément
 import java.util.List;
 
+import com.aspose.cells.*;
+
 /**
  * Description : gère la base d'images de référence utilisée pour la reconnaissance faciale
  * @author CandyCelia
@@ -253,13 +255,31 @@ public class Database {
 		int cpt1 = -1;
 		for (Image img : this.images) {
 			cpt1 += 1;
-			ReconnaissanceFaciale rc = new ReconnaissanceFaciale(this,img);
+			ReconnaissanceFaciale rc = new ReconnaissanceFaciale(this, img);
 			mat[cpt1] = rc.reconstruire(img.getVecteurImage().getVecteur(), 9);
 			for (double d : mat[cpt1]) {
 				System.out.print(" | "+ d);
 			}
 			System.out.println("");
 		}
+		
+		Workbook workbook = new Workbook();
+
+	    int index = workbook.getWorksheets().add();
+	    Worksheet sheet = workbook.getWorksheets().get(index);
+	    sheet.setName("Projection");
+
+	    ReconnaissanceFaciale rcExcel = new ReconnaissanceFaciale(this, sheet);
+
+	    rcExcel.miseAJourWorksheet(mat);    // on remplit la feuille Excel
+
+	    rcExcel.afficherNuage(mat); // on crée le graphique (nuage de points)
+
+	    try {
+	        workbook.save("resultat_reconnaissance.xlsx");// on sauvegarde finale (sécurisée)
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	
