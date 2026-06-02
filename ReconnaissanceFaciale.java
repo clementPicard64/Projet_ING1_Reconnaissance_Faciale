@@ -14,25 +14,30 @@ public class ReconnaissanceFaciale {
 	
     /**
      * CONSTRUCTEUR
+	 *
      * @param seuil un double
      */
 	public ReconnaissanceFaciale(double seuil, Database database) {
 		this.seuil = seuil;
 		this.database = database;
 	}
-	
+/*
 	/**
      * CONSTRUCTEUR
+	 *
      * @param img une image
      */
 	public ReconnaissanceFaciale(Image img) {
 		this.img = img;
 	}
-	
+*/	
 	/**
 	 * reconstruire methode qui prend un tableau de double et un entier et retourne un tableau de double
+	 *
 	 * @return un tableau de double
+	 *
 	 * @param vecteurProjete un tableau d'entier
+	 *
 	 * @param K un entier
 	 */
 	public double[] reconstruire(double[] vecteurProjete, int K) {
@@ -50,19 +55,26 @@ public class ReconnaissanceFaciale {
 	}
 	
 	/**
-	 * identifier prends une image et retourne une chaine de caractère
-	 * @return une chaine de caractère
-	 * @param imageTest une image
+	 * identifier prends une image et regarde si il y a une ressemblance avec les images de la base de donnée
+	 *
+	 * @return res.getCheminImage() est un String qui reprensente le chemin de l'image avec la plus courte distance
+	 *
+	 * @param imageTest est l'Image de comparaison 
 	 */
 	public String identifier(Image imageTest) {
-		
-		this.img = imageTest;
-		
-		Image res = calculerPlusCourtDistance();
 
+		//Initialise l'image dans les variables de la classe
+		this.img = imageTest;
+
+		//Calcule l'image avec la plus courte distance 
+		Image res = calculerPlusCourtDistance();
+		
+		//Vérifie qu'une imaga à bien été renvoyé
         if (res == null) {
             return "Inconnu";
         }
+
+		//Calcule la distance et la compare au seuil pour voir si on peut la renvoyer ou pas 
         double distance  = calculeDistance(res.getVecteurImage());
         if (diffDistanceSeuil(distance)) {
         	return "Inconnu";
@@ -72,7 +84,9 @@ public class ReconnaissanceFaciale {
 	
 	/**
 	 * evaluerTauxIdentification prend une liste d'images et renvoie un double. Evalue le seuil de distance nécessaire pour que les images soient reconnues
+	 *
 	 * @return un double (le seuil)
+	 *
 	 * @param baseTest une liste d'images projetées dans la nouvelle base censées être reconnues par notre reconnaissance faciale
 	 */
 	public double evaluerTauxIdentification(List<Image> baseTest) {
@@ -113,55 +127,72 @@ public class ReconnaissanceFaciale {
 	}
 	
 	/**
-	 * calculerPlusCourtDistance retourne une image
-	 * @return une image
+	 * calculerPlusCourtDistance qui va calculer et comparer toutes les distances entre l'image test et les images que nous avons dans la base de donnée pour retourner celle avec la plus courte distance
+	 *
+	 * @return imagePlusProche un objet image qui correspond à l'image la plus proche de notre image test
 	 */
 	public Image calculerPlusCourtDistance() {
-		
-		double minDistance = -1;
-		Image imagePlusProche = null;
-		
-		List<Image> toutesLesImages = new ArrayList<>();
+
+		//Initialisation des varriables
+		double minDistance = -1; //Distance la plus courte
+		Image imagePlusProche = null; //Stock l'image avec la distance la plus courte
+		List<Image> toutesLesImages = new ArrayList<>();//Creation d'un tableau qui stockera toutes les images de notre base de donnée
+
+		//Parcours toutes les personnes et ajoute toutes leurs images dans le tableau d'image toutesLesImages
 		for (Personne personne : database.getListPersonne() ) {
 			toutesLesImages.addAll(personne.getListImage());
 		}
 
+		//Parcours toutes les images de notre liste d'image pour calculer les distances et trouver la plus courte
         for (int i = 0; i < toutesLesImages.size(); i++) {
 
+			//Calcule la distance entre l'image test et l'image i de la liste d'image
             double nouvelleDistance = calculeDistance(toutesLesImages.get(i).getVecteurImage());
 
+			//Si aucune distance rentré ou que la distance est plus petite que celle actuel la remplace
             if (minDistance == -1 || nouvelleDistance < minDistance) {
                 minDistance = nouvelleDistance;
                 imagePlusProche = toutesLesImages.get(i);
             }
         }
 
-		return imagePlusProche;
+		//Renvoie l'image
+		return imagePlusProche; 
 	}
 	
 	/**
-	 * diffDistanceSeuil retourne un booleen
-	 * @return vrai ou faux
+	 * diffDistanceSeuil compare une distance et le seuil definie.
+	 *
+	 * @param distance un double qui représente une distance entre deux images (img test et une autre de la base de donnnée).
+	 *
+	 * @return un boolean qui est vrai si la distance est plus petite que le seuil et Faux si la distance est plus grande ou égale.
 	 */
 	public Boolean diffDistanceSeuil(double distance) {
         return distance < this.seuil;
 	}
 	
 	/**
-	 * calculeDistance prend une image et retourne un double
-	 * @return un double
-	 * @param img une Image
+	 * calculeDistance permet de calculer la distance entre deux images, l'image test et une autre de la base de donnée
+	 *
+	 * @return somme est un double qui represente la distance entre deux image
+	 *
+	 * @param vecteur qui est un Vecteur d'une Image
 	 */
 	public double calculeDistance(Vecteur vecteur) {
-		
-		double[] vecteurTest = this.img.getVecteurImage().getVecteur();
-		double[] tabVecteur = vecteur.getVecteur();
-		double somme = 0;
-		
+
+		//Initialise les variables 
+		double[] vecteurTest = this.img.getVecteurImage().getVecteur(); //Vecteur de l'image test
+		double[] tabVecteur = vecteur.getVecteur(); //Vecteur du vecteur en parametre
+		double somme = 0; //Resultat du calcule
+
+		//Parcours chaque valeur des deux vecteurs, les soustraits et les mets au carré. Tout en les additionnants à la somme
 		for (int i = 0; i < tabVecteur.length; i++) {
 			somme += Math.pow(vecteurTest[i] - tabVecteur[i], 2);
 		}
-		somme = Math.sqrt(somme);
+
+		//Fait la racine de la somme
+		somme = Math.sqrt(somme); 
+		
 		return somme;
 	}
 
