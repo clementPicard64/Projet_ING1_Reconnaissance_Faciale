@@ -184,14 +184,14 @@ public class Matrice {
 		double[] inverseValSing = new double[val_sing.length]; //initialisation du tableau des inverses des valeurs singulières
 	    for (int h = 0; h < val_sing.length; h++) {
 	        if (val_sing[h] != 0) {
-	            inverseSigma[h] = 1.0/val_sing[h]; //on calcule l'inverse si la valeur est non nulle
+	            inverseValSing[h] = 1.0/val_sing[h]; //on calcule l'inverse si la valeur est non nulle
 	        }
 	        else {
-	            inverseSigma[h] = 0.0; //on laisse 0 pour éviter la division par zéro 
+	            inverseValSing[h] = 0.0; //on laisse 0 pour éviter la division par zéro 
 	        }
 	    }
 
-	    RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma); //on crée la matrice diagonale 
+	    RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseValSing); //on crée la matrice diagonale 
 	    RealMatrix V = V_bis.multiply(matriceSigmaInverse); //on effectue le calcul et obtient la matrice des eigenfaces tels que Vh = (Wt*Uh)/σh 
 	    
 	    double[][] eigenfaces = new double[k][l]; //on initialise le tableau pour les k premières eigenfaces
