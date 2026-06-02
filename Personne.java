@@ -15,7 +15,9 @@ public class Personne {
     private String cheminPersonne;
     private ArrayList<Image> listImage;
     
-	/*Constructeur de la classe personne*/
+	/** 
+	 * Constructeur de la classe personne. Initialisation de toutes les variable de la classe
+	*/
 	public Personne(String nom, String prenom) {
 		this.nom = nom;
 		this.prenom = prenom;
@@ -46,7 +48,7 @@ public class Personne {
 	}
 	
 	/** 
-	 * La fonction getPrenom() permet de renvoyer le chemin du dossier ou est rangé l'utilisateur de la personne
+	 * La fonction getPrenom() permet de renvoyer le chemin du dossier ou est rangé la personne
 	 * 
 	 * @return cheminPersonne
 	 * 			Renvoie le chemin des fichiers ou est ranger l'utilisateur de la personne 
@@ -60,7 +62,7 @@ public class Personne {
 	 * La fonction getListImage() permet de renvoyer la liste d'images associer à une personne
 	 * 
 	 * @return listImage
-	 * 			Liste d'image de la personne
+	 * 			Liste d'Image de la personne (objet Image)
 	 * 
 	*/
 	public ArrayList<Image> getListImage() {
@@ -68,15 +70,25 @@ public class Personne {
 	}
 	
 	/**
+	 * La fonction va permettre d'afficher les informations d'une personne
+	 *
 	 * @return res
 	 * 			Est le resultat du toString avec le descriptif de la personne
 	*/
 	@Override
 	public String toString() {
+		
+		//Initialisation du résultat
 		String res = "La personne est ";
+		
+		//Ajout du nom et du prenom au resultat
 		res += this.getPrenom() +" "+ this.getNom();
+		
+		//Ajout du chemin
 		res += "\nLe chemin du dossier est " + this.getCheminPersonne();
+		
 		res += "\nVoici ces photos";
+		//Ajout de chaque photo grâce à une boucle for et en allant chercher dans la liste d'image de la personne
 		for (int i = 0 ; i < listImage.size(); i++) {
 			res += listImage.get(i).toString();
 			
