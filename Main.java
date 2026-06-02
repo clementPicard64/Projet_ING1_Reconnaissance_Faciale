@@ -58,7 +58,7 @@ public class Main {
 		db1.traiterImages(); 
 		
 		try {
-			Image img = new Image("/home/cytech/Projet/imagesAjoutComparaison/im1.png");
+			Image img = new Image("/home/cytech/Projet/imagesAjoutComparaison/im2.png");
 			img.redimensionner();
 			img.convertirEnNiveauDeGris();
 			img.vectoriser();
