@@ -29,6 +29,7 @@ public class Main {
 
 /*        System.out.println("\n MATRICE DE COVARIANCE DES IMAGES");
 
+
         try {
             Matrice covariance = matrice.MatriceCovariance();
             afficherMatrice(covariance);
@@ -45,14 +46,27 @@ public class Main {
             System.out.println("Erreur lors de l'extraction des eigenfaces : " + e.getMessage());
         }
         
-        Database db = new Database("base_images/base_images/blanc_adam"); //celia
-        try {
-            db.chargerBase("base_images/base_images/blanc_adam");
-            System.out.println("Base chargée, taille : " + db.getTaille());
-            System.out.println("Chemin : " + db.getChemin());
-        } catch (IOException e) {
-            System.out.println("Erreur : " + e.getMessage());
-        }
+        
+        Database db1 = new Database("/home/cytech/Projet/base_images");
+		try {
+			db1.chargerBase("/home/cytech/Projet/base_images");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		db1.getListPersonne();
+		db1.getListNomImage();
+		db1.traiterImages(); 
+		
+		try {
+			Image img = new Image("/home/cytech/Projet/imagesAjoutComparaison/im1.png");
+			img.redimensionner();
+			img.convertirEnNiveauDeGris();
+			img.vectoriser();
+			ReconnaissanceFaciale rf = new ReconnaissanceFaciale(db1,img);
+			System.out.println(rf.identifier(img));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
     public static void afficherVecteur(Vecteur v) {
@@ -77,16 +91,9 @@ public class Main {
             afficherVecteur(v);
         }
     }
-
-    public static void main(String[] args) {
-		Database db = new Database("/home/cytech/Projet/base_images");
-		try {
-			db.chargerBase("/home/cytech/Projet/base_images");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		db.getListNomPersonne();
-		db.getListNomImage();
-		db.traiterImages();
-	}
+  
+    
+    
+    
+    
 }
