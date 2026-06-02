@@ -159,14 +159,14 @@ public class Matrice {
 	    double[][] p = matriceEnTableau2D(W); // qu'on transforme en tableau 2D pour utiliser la bibliothèque
 	    
 	    RealMatrix matrix = new Array2DRowRealMatrix(p); //on crée une matrice reconnue par la bibliothèque
-	    SingularValueDecomposition svd = new SingularValueDecomposition(matrix); //on effectue la décomposition SVD
+	    SingularValueDecomposition svd = new SingularValueDecomposition(matrix); //on effectue la décomposition SVD  W = U × Σ × VT
 	        
-	    double[] val_sing = svd.getSingularValues(); //on récupère les valeurs singulières
+	    double[] val_sing = svd.getSingularValues(); //on récupère les valeurs singulières (elles sont triées par ordre décroissant)
 	    for (int i=0; i<val_sing.length; i++) {
 	        System.out.println(val_sing[i]); //on les affiche
 	    }
 	    
-	    RealMatrix U = svd.getU(); //on récupère la matrice U contenant les vecteurs propres
+	    RealMatrix U = svd.getU(); //on récupère la matrice U contenant les vecteurs associés aux vecteurs propres.
 	    
 	    int l = U.getColumnDimension(); //nombre de colonnes de U
 	    int c = U.getRowDimension();    //nombre de lignes de U
@@ -175,23 +175,24 @@ public class Matrice {
 	    for (int j=0; j< l; j++) {
 	        vecteursPropres[j] = U.getColumn(j); //on stocke chaque vecteur propre colonne par colonne		
 	    }
-	    
+	    // On calcul la matrice transposé de W
 	    RealMatrix VSigma = svd.getV().multiply(svd.getS()); //on calcule V * Sigma
 	    RealMatrix Wt = VSigma.multiply(svd.getUT());        //on calcule V * Sigma * U^T
 	    RealMatrix V_bis = Wt.multiply(U);                   //on calcule V * Sigma * U^T * U
 	    
-	    double[] inverseSigma = new double[val_sing.length]; //initialisation du tableau des inverses
+	    // On créer une matrice diagonale contenant les inverses des valeurs singulières 
+		double[] inverseValSing = new double[val_sing.length]; //initialisation du tableau des inverses des valeurs singulières
 	    for (int h = 0; h < val_sing.length; h++) {
 	        if (val_sing[h] != 0) {
 	            inverseSigma[h] = 1.0/val_sing[h]; //on calcule l'inverse si la valeur est non nulle
 	        }
 	        else {
-	            inverseSigma[h] = 0.0; //on laisse 0 pour éviter la division par zéro
+	            inverseSigma[h] = 0.0; //on laisse 0 pour éviter la division par zéro 
 	        }
 	    }
 
-	    RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma); //on crée la matrice diagonale de Sigma^-1
-	    RealMatrix V = V_bis.multiply(matriceSigmaInverse); //on obtient la matrice des eigenfaces V
+	    RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseSigma); //on crée la matrice diagonale 
+	    RealMatrix V = V_bis.multiply(matriceSigmaInverse); //on effectue le calcul et obtient la matrice des eigenfaces tels que Vh = (Wt*Uh)/σh 
 	    
 	    double[][] eigenfaces = new double[k][l]; //on initialise le tableau pour les k premières eigenfaces
 	    for (int n=0; n<k; n++) {
