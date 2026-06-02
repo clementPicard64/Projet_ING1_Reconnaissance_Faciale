@@ -20,8 +20,8 @@ public class Vecteur {
 		 */
 		double[] tabmoy = visageMoyen.getVecteur(); //On récupère le vecteur visage Moyen
 		
-		for(int i = 0; i< this.vecteur.length; i++) { // On soustrait chaque vecteur image par le vecteur visage moyen pour les centrés
-			this.vecteur[i] -= tabmoy[i];
+		for(int i = 0; i< this.vecteur.length; i++) {
+			this.vecteur[i] -= tabmoy[i]; // On soustrait chaque vecteur image par le vecteur visage moyen pour les centrés
 		}
 	}
 
