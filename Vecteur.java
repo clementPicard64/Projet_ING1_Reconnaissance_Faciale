@@ -18,9 +18,9 @@ public class Vecteur {
 		 * @author Yassine
 		 * @param visageMoyen tableau 1D
 		 */
-		double[] tabmoy = visageMoyen.getVecteur();
+		double[] tabmoy = visageMoyen.getVecteur(); //On récupère le vecteur visage Moyen
 		
-		for(int i = 0; i< this.vecteur.length; i++) {
+		for(int i = 0; i< this.vecteur.length; i++) { // On soustrait chaque vecteur image par le vecteur visage moyen pour les centrés
 			this.vecteur[i] -= tabmoy[i];
 		}
 	}
