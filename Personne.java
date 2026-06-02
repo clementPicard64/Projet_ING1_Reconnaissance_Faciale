@@ -17,6 +17,12 @@ public class Personne {
     
 	/** 
 	 * Constructeur de la classe personne. Initialisation de toutes les variable de la classe
+	 *
+	 * @param nom 
+	 *			String qui correspond au nom de la personne
+	 *
+	 * @param prenom 
+	 *			String qui correspond au prenom de la personne
 	*/
 	public Personne(String nom, String prenom) {
 		this.nom = nom;
