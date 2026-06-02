@@ -2,7 +2,7 @@ package projet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList; //AJout Clément
+import java.util.ArrayList; //Ajout Clément
 import java.util.List;
 
 /**
@@ -27,6 +27,8 @@ public class Database {
 	private Vecteur visageMoyen;
 	private List<Personne> p;
 	
+	private Vecteur[] vecteurs_image;
+	
 	
     /**
      * CONSTRUCTEUR
@@ -38,6 +40,7 @@ public class Database {
 		valeursPropres = null;
 		images = null;
 		projections = null;
+		p = null;
 	}
 	
 	/**
@@ -46,15 +49,43 @@ public class Database {
 	 */
 	public void chargerBase(String chemin) throws IOException {
 		File dossier = new File(chemin); //creer un objet File avec le chemin
-		File[] fichiers = dossier.listFiles(); //liste les fichiers du dossier avec listFiles()
-		images = new Image[fichiers.length]; //initialiser images avec la bonne taille
-		int i = 0;
+		File[] sousDossiers = dossier.listFiles();
+		//File[] fichiers = dossier.listFiles(); //liste les fichiers du dossier avec listFiles()
+		//images = new Image[fichiers.length]; //initialiser images avec la bonne taille
+		//int i = 0;
 		
-		for (File fichier : fichiers) { //pour chaque fichier creer un obj image
-			images[i] = new Image(fichier.getName(), chemin); //creer un nouvele obj img et stocker img dans le tab
-			i++;
-			taille++; //maj la taille
+		List<Image> listeTemporaireImages = new ArrayList<>();
+		
+		for (File sousDossier : sousDossiers) {
+			if (sousDossier.isDirectory()) {
+                // Extraction du nom et prénom à partir du nom du dossier "Nom_Prenom"
+                String nomDossier = sousDossier.getName();
+                String[] parties = nomDossier.split("_");
+                String nom;
+                nom = parties[0];
+                String prenom;
+                prenom = parties[1];
+                Personne personne = new Personne(nom, prenom);
+                if (p == null) { // Si c'est la premiere personne de la base d'images 
+        	        p = new ArrayList<Personne>();
+        	    }
+                this.p.add(personne);
+                File[] fichiersImages = sousDossier.listFiles();
+                if (fichiersImages != null) {
+                    for (File fichierImg : fichiersImages) {
+                        if (fichierImg.isFile()) {
+                            Image img = new Image(fichierImg.getName(), sousDossier.getAbsolutePath());
+                            listeTemporaireImages.add(img);
+                            
+             
+                            personne.ajouterImage(fichierImg); 
+                        }
+                    }
+                }
+			}
 		}
+		this.taille = listeTemporaireImages.size();
+	    this.images = listeTemporaireImages.toArray(new Image[0]);
 	}
 	
     /**
@@ -164,8 +195,7 @@ public class Database {
 	    else {
 	    	for (Personne pers : this.p) {
 	    		if ((pers.getNom().equals(nom)) && (pers.getPrenom().equals(prenom))) {
-	    			personne = pers;
-	    			
+	    			personne = pers;	
 	    		}
 	    	}
 	    }
@@ -179,5 +209,81 @@ public class Database {
 		newImages[taille] = image; //on ajoute img a la fin
 		taille = taille +1; //maj la taille du tab
 		images = newImages; //on maj le tab de base
+		
 	}
+	
+	//Verif 
+	public void getListNomPersonne() {
+		for (Personne pers : this.p) {
+			System.out.println(pers.getNom() + "_" + pers.getPrenom());
+		}
+	}
+	//Verif
+	public void getListNomImage() {
+		for (Image img : this.images) {
+			System.out.println(img.toString());
+		}
+	}
+	/*
+	//Verif
+	public void ImagePersonne() {
+		Personne pers;
+		pers = this.p[0];
+		
+	}*/
+	
+	//Ajout traiter toutes les images pour les transformer en vecteurs puis pour y faire les opérations mathématiques
+	public void traiterImages() {
+		int n = images.length;
+		this.vecteurs_image = new Vecteur[n];
+		int cpt = -1;
+		for (Image img : this.images) {
+			cpt += 1;
+			img.redimensionner();
+			img.convertirEnNiveauDeGris();
+			img.vectoriser();
+			Vecteur v = img.getVecteurImage();
+			this.vecteurs_image[cpt] = v;
+		}
+		this.matriceTotal = new Matrice(this.vecteurs_image);
+		this.matriceTotal.centrerDonnees();
+		this.engenfaces = this.matriceTotal.extraireEigenfaces(9);
+		afficherMatrice(engenfaces);
+		double[][] mat = new double[n][9];
+		int cpt1 = -1;
+		for (Image img : this.images) {
+			cpt1 += 1;
+			ReconnaissanceFaciale rc = new ReconnaissanceFaciale(this,img);
+			mat[cpt1] = rc.reconstruire(img.getVecteurImage().getVecteur(), 9);
+			for (double d : mat[cpt1]) {
+				System.out.print(" | "+ d);
+			}
+			System.out.println("");
+		}
+	}
+	
+	
+	//Verif
+	public static void afficherVecteur(Vecteur v) {
+
+        double[] tab = v.getVecteur();
+
+        System.out.print("[ ");
+
+        for (double valeur : tab) {
+            System.out.print(valeur + " ");
+        }
+
+        System.out.println("]");
+    }
+	
+	public static void afficherMatrice(Matrice m) {
+
+        Vecteur[] lignes = m.getMatrice();
+
+        for (Vecteur v : lignes) {
+            afficherVecteur(v);
+        }
+    }
+	
 }
