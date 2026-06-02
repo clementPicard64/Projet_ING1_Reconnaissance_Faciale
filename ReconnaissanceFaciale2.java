@@ -50,7 +50,7 @@ public class ReconnaissanceFaciale {
 		for (int i=0; i< V.getM(); i++) {
 			double somme = 0;
 			for (int j=0; j<K; j++) {
-				somme = somme + vecteurProjete[i]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
+				somme = somme + vecteurProjete[j]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
 			}
 			z_k[i] = somme;
 		}
@@ -71,7 +71,7 @@ public class ReconnaissanceFaciale {
 			for (int j=0; j<Z_k[0].length; j++) {
 				//cells.get(i+1, 0).putValue(); récupérer le nom de l'image concernée, potentiellement en tableau en parametre
 		        cells.get(i+1, 1).putValue(Z_k[i][0]);
-		        cells.get(i+1, 2).putValue(Z_k[i][2]);
+		        cells.get(i+1, 2).putValue(Z_k[i][1]);
 			}
 		}
 	}
@@ -187,11 +187,15 @@ public class ReconnaissanceFaciale {
 			toutesLesImages.addAll(personne.getListImage());
 		}
 		
-		for (int i = 0; i < toutesLesImages.size(); i++) {
-			System.out.println(toutesLesImages.get(i).getVecteurImage().getVecteur());
+		for (Image img : toutesLesImages) {
+			img.redimensionner();
+			img.convertirEnNiveauDeGris();
+			img.vectoriser();
 		}
 		
         for (int i = 0; i < toutesLesImages.size(); i++) {
+
+            if (toutesLesImages.get(i).getVecteurImage() == null) continue;
 
             double nouvelleDistance = calculeDistance(toutesLesImages.get(i).getVecteurImage());
 
