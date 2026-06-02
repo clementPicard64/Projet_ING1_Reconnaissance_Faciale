@@ -2,6 +2,7 @@ package projet;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.aspose.cells.*;
 
 /**
  * Description : gère les interactions avec l'utilisateur
@@ -11,15 +12,17 @@ public class ReconnaissanceFaciale {
 	private double seuil;
 	private Database database;
 	private Image img;
+	private Worksheet worksheet;
 	
     /**
      * CONSTRUCTEUR
 	 *
      * @param seuil un double
      */
-	public ReconnaissanceFaciale(double seuil, Database database) {
+	public ReconnaissanceFaciale(double seuil, Database database, Worksheet worksheet) {
 		this.seuil = seuil;
 		this.database = database;
+		this.worksheet = worksheet;
 	}
 /*
 	/**
@@ -52,6 +55,54 @@ public class ReconnaissanceFaciale {
 			z_k[i] = somme;
 		}
 		return z_k; 
+	}
+
+	/**
+	 * procédure qui initialise / met à jour les valeurs des coordonnées quand on ajoute une image
+	 * @param Z_k un tableau 2D contenant les coordonnées de toutes les images projetées dans la nouvelle base
+	 */
+	public void miseAJourWorksheet(double[][] Z_k) {
+		Cells cells = worksheet.getCells();
+		cells.get("A1").putValue("Nom");
+		cells.get("A2").putValue("X");
+		cells.get("A3").putValue("Y");
+		for (int i=0; i<Z_k.length; i++) {
+			for (int j=0; j<Z_k[0].length; j++) {
+				//cells.get(i+1, 0).putValue(); récupérer le nom de l'image concernée, potentiellement en tableau en parametre
+		        cells.get(i+1, 1).putValue(Z_k[i][0]);
+		        cells.get(i+1, 2).putValue(Z_k[i][1]);
+			}
+		}
+	}
+	
+	
+	/**
+	 * procédure qui affiche le nuage de points
+	 * @param Z_k un tableau 2D contenant les coordonnées de toutes les images projetées dans la nouvelle base (pour avoir la taille)
+	 */
+	public void afficherNuage(double[][] Z_k) {
+		int chartIndex = this.worksheet.getCharts().add(ChartType.SCATTER, 5, 5, 25, 15);
+	    Chart chart = this.worksheet.getCharts().get(chartIndex);
+
+	    //Y
+	    chart.getNSeries().add("C2:C" + (Z_k.length + 1), true);
+	    Series serie = chart.getNSeries().get(0);
+
+	    //X
+	    String sheetName = worksheet.getName();
+	    serie.setXValues("=" + sheetName + "!B2:B" + (Z_k.length + 1));
+	    serie.setName("Images");
+
+	    chart.getTitle().setText("Nuage de points");
+	    chart.getCategoryAxis().getTitle().setText("X");
+	    chart.getValueAxis().getTitle().setText("Y");
+
+	    try {
+	        Workbook workbook = worksheet.getWorkbook();
+	        workbook.save("nuage_points.xlsx");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	/**
