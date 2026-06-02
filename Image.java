@@ -28,24 +28,31 @@ public class Image {
 		this.id = id;
 		this.cheminImage = CheminPersonne + "/" + id;
 		this.img = ImageIO.read(new File(this.cheminImage));
-		//this.largeurImage = this.img.getWidth();
-		//this.hauteurImage = this.img.getHeight();	
 	}
     
+	
+	public Image(String CheminImage) throws IOException {
+		this.cheminImage = CheminImage;
+		this.img = ImageIO.read(new File(this.cheminImage));
+	}
+	
+	
+	
+	
     /**3
      * @author Clément 
      * Procédure permettant de convertir la matrice en niveau de gris 
      */
     public void convertirEnNiveauDeGris() {
-    	this.matriceImage = new double[100][100];
-        for (int y = 0; y < 100; y++) {
-            for (int x = 0; x < 100; x++) {
+    	this.matriceImage = new double[112][92];
+        for (int y = 0; y < 92; y++) {
+            for (int x = 0; x < 112; x++) {
             	int pixel = this.img.getRGB(x, y);
                 int r = (pixel >> 16) & 0xFF;
                 int g = (pixel >> 8)  & 0xFF;
                 int b =  pixel & 0xFF;
 
-                this.matriceImage[y][x] = (double) (r + g + b) / 3;
+                this.matriceImage[x][y] = (double) (r + g + b) / 3;
             }
         }
     }
@@ -57,9 +64,9 @@ public class Image {
      */
     public void vectoriser() {
     	int cpt = 0;
-    	double[] tab = new double[10000];
-    	for (int y = 0; y < 100; y++) {
-            for (int x = 0; x < 100; x++) {
+    	double[] tab = new double[10304];
+    	for (int y = 0; y < 112; y++) {
+            for (int x = 0; x < 92; x++) {
             	tab[cpt] = this.matriceImage[y][x];
             	cpt += 1;
             }
@@ -104,9 +111,9 @@ public class Image {
      * @param nouvelleHauteur
      */
     public void redimensionner() {
-        BufferedImage redim = new BufferedImage(100, 100, this.img.getType());
+        BufferedImage redim = new BufferedImage(112, 92, this.img.getType());
         java.awt.Graphics2D g = redim.createGraphics(); //Dessinne l'image redim avec g 
-        g.drawImage(this.img.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 100x100,et la met dans redim
+        g.drawImage(this.img.getScaledInstance(112, 92, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 100x100,et la met dans redim
         g.dispose(); //Libere l'espace utlisé par g
         this.img = redim;
     }
