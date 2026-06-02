@@ -149,6 +149,12 @@ public class Matrice {
 	}
 	
 	public Matrice extraireEigenfaces(int k) {	
+		/**
+		 * Fonction qui effectue une SVD sur la matrice contenant les images centrées et puis donne les k premières eigenfaces correspondant
+		 * @param entier k
+		 * @author Yassine
+		 * @return Matrice k x (taille des vecteurs)
+		 */		
 	    Vecteur[] W = this.centrerDonnees(); //on part de la matrice centrée
 	    double[][] p = matriceEnTableau2D(W); // qu'on transforme en tableau 2D pour utiliser la bibliothèque
 	    
