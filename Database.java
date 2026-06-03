@@ -58,7 +58,7 @@ public class Database {
 		
 		List<Image> listeTemporaireImages = new ArrayList<>();
 		
-		for (File sousDossier : sousDossiers) {
+		for (File sousDossier : sousDossiers) { //parcours dossier principal
 			if (sousDossier.isDirectory()) {
                 // Extraction du nom et prénom à partir du nom du dossier "Nom_Prenom"
                 String nomDossier = sousDossier.getName();
@@ -68,10 +68,11 @@ public class Database {
                 nom = parties[0];
                 String prenom;
                 prenom = parties[1];
-                Personne personne = new Personne(nom, prenom);
+                Personne personne = new Personne(nom, prenom); //creer une personne pour chaques sous dossiers
                 if (p == null) { // Si c'est la premiere personne de la base d'images 
         	        p = new ArrayList<Personne>();
         	    }
+				//charge images et les stocks
                 this.p.add(personne);
                 File[] fichiersImages = sousDossier.listFiles();
                 if (fichiersImages != null) {
@@ -85,7 +86,7 @@ public class Database {
                 }
 			}
 		}
-		this.taille = listeTemporaireImages.size();
+		this.taille = listeTemporaireImages.size(); //la taille : le nb d'images chargés
 	    this.images = listeTemporaireImages.toArray(new Image[0]);
 	}
 	
@@ -143,6 +144,7 @@ public class Database {
 	 * @param img une image
 	 */
 	//MAJ DANS LE DIAGRAMME
+	//calcule coordonnées d'une image dans le sous espace de engenface via prod scalaire
 	public double[] projeterImage(Image img) {
 		Vecteur v = img.getVecteurImage(); //recup le vect de img
 		double[] tab = new double[engenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
