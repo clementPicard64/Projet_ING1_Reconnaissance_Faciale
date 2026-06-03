@@ -45,7 +45,7 @@ public class Vecteur {
 	public double produitScalaire(Vecteur autre) {
 	    double somme = 0;
 	    for (int i = 0; i < this.vecteur.length; i++) {
-	        somme += this.vecteur[i] * autre.vecteur[i]; //on multiplie les valeurs des vecteurs de même indice
+	        somme += this.vecteur[i] * autre.vecteur[i]; //on somme les produits des valeurs du même indice
 	    }
 	    return somme;
 	}
