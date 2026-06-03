@@ -10,17 +10,17 @@ public class Image {
 	
 	private String id;
 	private BufferedImage img; //img stockée avec BufferedImage
-	
-	//private boolean estDeReference;
 	private String cheminImage; //Chemin de l'image
 	private double[][] matriceImage; //Matrice de l'image (tableau 2D)
 	private Vecteur vecteurImage; //Vecteur colonne de l'image de type de la classe Vecteur
 	
 	
 	/**
-	 * 1
+	 * 
 	 * @author Clément
-	 * @param Chemin : chemin de l'image 
+	 * Constructeur lorqu'on veut ajouter une image
+	 * @param CheminPersonne : chemin de l'image
+	 * @param id : nom de l'image 
 	 * @throws IOException (ajout de l'exception plus tard)
 	 * 
 	 */
@@ -30,7 +30,11 @@ public class Image {
 		this.img = ImageIO.read(new File(this.cheminImage));
 	}
     
-	
+	/**
+	*
+	* Constructeur lorsqu'on veut 
+	* @param CheminImage : chemin de l'image 
+	*/
 	public Image(String CheminImage) throws IOException {
 		this.cheminImage = CheminImage;
 		this.img = ImageIO.read(new File(this.cheminImage));
@@ -39,9 +43,9 @@ public class Image {
 	
 	
 	
-    /**3
+    /**
      * @author Clément 
-     * Procédure permettant de convertir la matrice en niveau de gris 
+     * Procédure permettant de convertir la matrice en niveau de gris (3)
      */
     public void convertirEnNiveauDeGris() {
     	this.matriceImage = new double[112][92];
@@ -57,11 +61,11 @@ public class Image {
         }
     }
     
-    /**4
+    /**
      * @author Clément
-     * Procédure permettant de vectoriser la matrice (transformation en vecteur colonne)
+     * Procédure permettant de vectoriser la matrice (transformation en vecteur colonne) (4)
      * 
-     */
+     */f
     public void vectoriser() {
     	int cpt = 0;
     	double[] tab = new double[10304];
@@ -98,29 +102,28 @@ public class Image {
 	/**
 	 * @author Clément
 	 * Getteur qui retourne la photo 
-	 * @return
+	 * @return (BufferedImage)
 	 */
     public BufferedImage getImage() {
         return this.img;
     }
     
     /**
-     * 2
+     * 
      * @author Clément
-     * @param nouvelleLargeur
-     * @param nouvelleHauteur
+     * Méthode permettant de redimensionner l'image dans les dimensions de la base d'images (2)
      */
     public void redimensionner() {
         BufferedImage redim = new BufferedImage(112, 92, this.img.getType());
         java.awt.Graphics2D g = redim.createGraphics(); //Dessinne l'image redim avec g 
-        g.drawImage(this.img.getScaledInstance(112, 92, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 100x100,et la met dans redim
+        g.drawImage(this.img.getScaledInstance(112, 92, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 112x92,et la met dans redim
         g.dispose(); //Libere l'espace utlisé par g
         this.img = redim;
     }
     
     /**
      * @author Clement
-     * @return le chemin de l'image 
+     * @return (String) le chemin de l'image
      */
     public String getCheminImage() {
     	return this.cheminImage;
