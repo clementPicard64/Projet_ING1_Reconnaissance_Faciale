@@ -25,6 +25,9 @@ public class Vecteur {
 		}
 	}
 
+	/**
+	*fonction getVecteur() qui permet d'accéder aux valeurs du Vecteur
+	*/
 	public double[] getVecteur() {
 		return vecteur;
 	}
@@ -33,7 +36,7 @@ public class Vecteur {
 		this.vecteur = vecteur;
 	}
 
-		/**
+	/**
 	 * Description : prends deux vect et en fait le produit scalaire
 	 * @author CandyCelia
 	 * @param autre un vecteur
@@ -42,7 +45,7 @@ public class Vecteur {
 	public double produitScalaire(Vecteur autre) {
 	    double somme = 0;
 	    for (int i = 0; i < this.vecteur.length; i++) {
-	        somme += this.vecteur[i] * autre.vecteur[i];
+	        somme += this.vecteur[i] * autre.vecteur[i]; //on multiplie les valeurs des vecteurs de même indice
 	    }
 	    return somme;
 	}
