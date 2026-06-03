@@ -225,15 +225,13 @@ public class Database {
 			System.out.println(img.toString());
 		}
 	}
-	/*
-	//Verif
-	public void ImagePersonne() {
-		Personne pers;
-		pers = this.p[0];
-		
-	}*/
+
 	
-	//Ajout traiter toutes les images pour les transformer en vecteurs puis pour y faire les opérations mathématiques
+	/**
+	 * traiterImages()
+	 * Traitement de toutes les images pour les transformer en vecteurs puis pour y faire les opérations mathématiques
+	 * 
+	 */
 	public void traiterImages() {
 		int n = images.length;
 		this.vecteurs_image = new Vecteur[n];
@@ -303,5 +301,13 @@ public class Database {
             afficherVecteur(v);
         }
     }
+
+	/*
+	//Verif
+	public void ImagePersonne() {
+		Personne pers;
+		pers = this.p[0];
+		
+	}*/
 	
 }
