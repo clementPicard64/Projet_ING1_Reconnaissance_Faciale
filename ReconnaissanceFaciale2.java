@@ -43,13 +43,13 @@ public class ReconnaissanceFaciale {
 	 * @param vecteurProjete un tableau d'entier
 	 * @param K un entier
 	 */
-	public double[] reconstruire(double[] vecteurProjete, int K) {
+	public double[] reconstruire(double[] vecteurProjete){
 		//Matrice V = matrice.extraireEigenfaces(K);
-		Matrice V = database.getEngenfaces().extraireEigenfaces(K);
+		Matrice V = database.getEngenfaces();
 		double[] z_k = new double[V.getM()];
-		for (int i=0; i< V.getM(); i++) {
+		for (int i=0; i< V.getN(); i++) {
 			double somme = 0;
-			for (int j=0; j<K; j++) {
+			for (int j=0; j<V.getM(); j++) {
 				somme = somme + vecteurProjete[j]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
 			}
 			z_k[i] = somme;
@@ -149,16 +149,18 @@ public class ReconnaissanceFaciale {
 		for (Image I : baseTest) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
 		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(this.database,I); //objet pour calculer la distance
 		    double minGlobal = -1; //on initialise le minimum global
+		    
 		    for (Personne P : p) {
 		        ArrayList<Image> L = ((Personne) P).getListImage(); //on récupère la liste des images par personne
 		        double min = rf.calculeDistance(L.get(0).getVecteurImage()); //on définit le minimum au premier élément
+		        
 		        for (Image J : ((Personne) P).getListImage()) { //boucle sur toutes les images
 		            if (min > rf.calculeDistance(J.getVecteurImage())) {
 		                min = rf.calculeDistance(J.getVecteurImage()); //on met à jour le minimum
 		            }
 		        }
 		        if (minGlobal == -1 || min < minGlobal) {
-		            minGlobal = min; //on garde le minimum toutes personnes confondues
+		            minGlobal = min; //on garde le minimum pour toutes les personnes
 		        }
 		    }
 		    dist[i] = minGlobal; //on stocke la distance minimale pour cette image de test
