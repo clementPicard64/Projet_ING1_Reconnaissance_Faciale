@@ -3,7 +3,7 @@
 
 Ceci est un tutoriel pour utiliser la bibliothèque contenant les fonctions qui servent à la décomposition en valeurs singulières.
 
-1. Ttéléchargez la bibliothéque en copiant ce lien sur votre navigateur--> https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar
+1. Téléchargez la bibliothéque en copiant ce lien sur votre navigateur--> https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar
 
 2. Sur votre Compilateur JAVA (Eclipse IDE) allez sur Package Explorer
 
