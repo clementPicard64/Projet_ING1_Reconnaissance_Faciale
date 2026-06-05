@@ -10,6 +10,7 @@ public class Matrice {
     private Vecteur[] M; //tableau de vecteurs (matrice)
     private int n; // nombre d'images
     private int m; // nombre de pixels
+    private double[] val_sing;
 
     /**
      * CONSTRUCTEUR
@@ -49,6 +50,10 @@ public class Matrice {
      */
     public int getM() {
         return m;
+    }
+    
+    public double[] getValSing() {
+    	return this.val_sing;
     }
 	
     private Matrice calculTransposee(Vecteur[] M) {
@@ -148,23 +153,48 @@ public class Matrice {
 	    return new Matrice(W);
 	}
 	
-	public Matrice extraireEigenfaces(int k) {	
+	
+	public int determinerK(double[] val_sing) {
+		double var=0.9;
+		int k=1;
+		double num = val_sing[0]*val_sing[0];
+		double denom = 0;
+		for (int i=0; i<val_sing.length; i++) {
+			denom += val_sing[i]*val_sing[i];
+		}
+		System.out.println(num);
+		System.out.println(denom);
+		System.out.println(num/denom);
+		
+		while (num/denom<var) {
+			k++;
+		    num=0;
+			for (int i=0; i<k; i++) {
+				num += val_sing[i]*val_sing[i];
+			}
+		}
+		return k;
+	}
+	
+	public Matrice extraireEigenfaces() {	
 		/**
 		 * Fonction qui effectue une SVD sur la matrice contenant les images centrées et puis donne les k premières eigenfaces correspondantes
 		 * @param entier k
 		 * @author Yassine
 		 * @return Matrice k x (taille des vecteurs)
 		 */		
+		this.val_sing = new double[n];
 	    Vecteur[] W = this.centrerDonnees(); //on part de la matrice centrée
 	    double[][] p = matriceEnTableau2D(W); // qu'on transforme en tableau 2D pour utiliser la bibliothèque
 	    
 	    RealMatrix matrix = new Array2DRowRealMatrix(p); //on crée une matrice reconnue par la bibliothèque
 	    SingularValueDecomposition svd = new SingularValueDecomposition(matrix); //on effectue la décomposition SVD  W = U × Σ × VT
 	        
-	    double[] val_sing = svd.getSingularValues(); //on récupère les valeurs singulières (elles sont triées par ordre décroissant)
-	    for (int i=0; i<val_sing.length; i++) {
-	        System.out.println(val_sing[i]); //on les affiche
-	    }
+	    this.val_sing = svd.getSingularValues(); //on récupère les valeurs singulières (elles sont triées par ordre décroissant)
+	    //System.out.println(val_sing.length);
+	    int k = determinerK(val_sing);
+	    
+	    System.out.println("Valeurs propres :" + k);
 	    
 	    RealMatrix U = svd.getU(); //on récupère la matrice U contenant les vecteurs associés aux vecteurs propres.
 	    
@@ -194,7 +224,7 @@ public class Matrice {
 	    RealMatrix matriceSigmaInverse = MatrixUtils.createRealDiagonalMatrix(inverseValSing); //on crée la matrice diagonale 
 	    RealMatrix V = V_bis.multiply(matriceSigmaInverse); //on effectue le calcul et obtient la matrice des eigenfaces tels que Vh = (Wt*Uh)/σh 
 	    
-	    double[][] eigenfaces = new double[k][l]; //on initialise le tableau pour les k premières eigenfaces
+	    double[][] eigenfaces = new double[k][c]; //on initialise le tableau pour les k premières eigenfaces
 	    for (int n=0; n<k; n++) {
 	        eigenfaces[n] = V.getColumn(n); //on extrait les k premières colonnes
 	    }
