@@ -248,7 +248,7 @@ public class Database {
 		}
 		this.matriceTotal = new Matrice(this.vecteurs_image);
 		this.engenfaces = this.matriceTotal.extraireEigenfaces(9);
-		afficherMatrice(engenfaces);
+		//afficherMatrice(engenfaces);
 		double[][] mat = new double[n][9];
 		int cpt1 = -1;
 		for (Image img : this.images) {
