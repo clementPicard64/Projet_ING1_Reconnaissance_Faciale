@@ -22,7 +22,7 @@ public class Database {
 	//UTILE DANS PROJETER MATRICE
 	private double[][] projections; //MODIFIER DANS LE DIAGRAMME
 	
-	private Matrice engenfaces;
+	private Matrice eigenfaces;
 	@SuppressWarnings("unused")
 	private Matrice matriceTotal;
 	@SuppressWarnings("unused")
@@ -115,11 +115,11 @@ public class Database {
 	}
 	
 	 /**
-     * GETTER engenfaces
-     * @return engenfaces
+     * GETTER eigenfaces
+     * @return eigenfaces
      */
-	public Matrice getEngenfaces() {
-	    return engenfaces;
+	public Matrice getEigenfaces() {
+	    return eigenfaces;
 	}
 	
 	/**
@@ -144,13 +144,13 @@ public class Database {
 	 * @param img une image
 	 */
 	//MAJ DANS LE DIAGRAMME
-	//calcule coordonnées d'une image dans le sous espace de engenface via prod scalaire
+	//calcule coordonnées d'une image dans le sous espace de eigenface via prod scalaire
 	public double[] projeterImage(Image img) {
 		Vecteur v = img.getVecteurImage(); //recup le vect de img
-		double[] tab = new double[engenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
+		double[] tab = new double[eigenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
 		int i = 0;
 		
-		for (Vecteur e : engenfaces.getMatrice()) {//ppur chauqe eigenface dans engenfaces.getMatrice()
+		for (Vecteur e : eigenfaces.getMatrice()) {//ppur chauqe eigenface dans eigenfaces.getMatrice()
 			tab[i] = e.produitScalaire(v); //stocker chaque prod scalaire du vect img dans le tab
 			i++;
 		}
@@ -247,8 +247,9 @@ public class Database {
 			this.vecteurs_image[cpt] = v;
 		}
 		this.matriceTotal = new Matrice(this.vecteurs_image);
-		this.engenfaces = this.matriceTotal.extraireEigenfaces(9);
-		//afficherMatrice(engenfaces);
+		this.eigenfaces = this.matriceTotal.extraireEigenfaces(9);
+		//afficherMatrice(eigenfaces);
+		//verifOrthogonalite(eigenfaces);
 		double[][] mat = new double[n][9];
 		int cpt1 = -1;
 		for (Image img : this.images) {
@@ -279,7 +280,22 @@ public class Database {
 	        e.printStackTrace();
 	    }
 	}
-	
+
+	/**
+	 * methode qui affiche les résultats des produits scalaires des eigenfaces entre elles
+	 * @param eigenfaces matrice des eigenfaces
+	 */
+	public void verifOrthogonalite(Matrice eigenfaces) {
+	    for (int i = 0; i < eigenfaces.getMatrice().length; i++) {
+	    	double scal=0;
+	        Vecteur v1 = eigenfaces.getMatrice()[i]; //on recupere le i-ème vecteur
+	        for (int j = i + 1; j < eigenfaces.getMatrice().length; j++) { //on boucle pour que chaque produit scalaire ne soit calculé qu'une fois
+	            Vecteur v2 = eigenfaces.getMatrice()[j]; //on recupere les j-ème vecteurs (où j>i)
+	            scal = v1.produitScalaire(v2); //calcul du produit scalaire
+	            System.out.println("v" + i + ".v" + j + " = " + scal); //affichage
+	        }
+	    }
+	}
 	
 	//Verif
 	public static void afficherVecteur(Vecteur v) {
