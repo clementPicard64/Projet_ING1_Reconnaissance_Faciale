@@ -45,7 +45,7 @@ public class ReconnaissanceFaciale {
 	 */
 	public double[] reconstruire(double[] vecteurProjete){
 		//Matrice V = matrice.extraireEigenfaces(K);
-		Matrice V = database.getEngenfaces();
+		Matrice V = database.getEigenfaces();
 		double[] z_k = new double[V.getM()];
 		for (int i=0; i< V.getN(); i++) {
 			double somme = 0;
