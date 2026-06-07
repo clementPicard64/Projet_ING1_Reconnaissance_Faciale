@@ -32,7 +32,7 @@ public class Image {
     
 	/**
 	*
-	* Constructeur lorsqu'on veut 
+	* Constructeur lorsqu'on veut comparer une image
 	* @param CheminImage : chemin de l'image 
 	*/
 	public Image(String CheminImage) throws IOException {
@@ -41,11 +41,22 @@ public class Image {
 	}
 	
 	
-	
+	    /**
+     * 
+     * @author Clément
+     * Méthode permettant de redimensionner l'image dans les dimensions de la base d'images (2eme etape pour la vectorisation)
+     */
+    public void redimensionner() {
+        BufferedImage redim = new BufferedImage(112, 92, this.img.getType());
+        java.awt.Graphics2D g = redim.createGraphics(); //Dessinne l'image redim avec g 
+        g.drawImage(this.img.getScaledInstance(112, 92, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 112x92,et la met dans redim
+        g.dispose(); //Libere l'espace utlisé par g
+        this.img = redim;
+    }
 	
     /**
      * @author Clément 
-     * Procédure permettant de convertir la matrice en niveau de gris (3)
+     * Procédure permettant de convertir la matrice en niveau de gris (3 etape pour la vectorisation)
      */
     public void convertirEnNiveauDeGris() {
     	this.matriceImage = new double[112][92];
@@ -63,7 +74,7 @@ public class Image {
     
     /**
      * @author Clément
-     * Procédure permettant de vectoriser la matrice (transformation en vecteur colonne) (4)
+     * Procédure permettant de vectoriser la matrice (transformation en vecteur colonne) (4eme et dernière etape)
      * 
      */f
     public void vectoriser() {
@@ -92,7 +103,7 @@ public class Image {
    /**
     * @author Clément
     * Retourne le vecteur colonne associé à l'image
-    * @return (Vecteur) 
+    * @return (Vecteur) le vecteur (type vecteur de l'image)
     */
     public Vecteur getVecteurImage() {
     	return this.vecteurImage;
@@ -102,24 +113,13 @@ public class Image {
 	/**
 	 * @author Clément
 	 * Getteur qui retourne la photo 
-	 * @return (BufferedImage)
+	 * @return (BufferedImage) l'image
 	 */
     public BufferedImage getImage() {
         return this.img;
     }
     
-    /**
-     * 
-     * @author Clément
-     * Méthode permettant de redimensionner l'image dans les dimensions de la base d'images (2)
-     */
-    public void redimensionner() {
-        BufferedImage redim = new BufferedImage(112, 92, this.img.getType());
-        java.awt.Graphics2D g = redim.createGraphics(); //Dessinne l'image redim avec g 
-        g.drawImage(this.img.getScaledInstance(112, 92, java.awt.Image.SCALE_SMOOTH), 0, 0, null); //Prends l'image, la redimentionne en 112x92,et la met dans redim
-        g.dispose(); //Libere l'espace utlisé par g
-        this.img = redim;
-    }
+
     
     /**
      * @author Clement
