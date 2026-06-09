@@ -30,7 +30,8 @@ public class Client extends Application {
 
     private Database database;//bdd d'images
     private File fichierAjouter;//fichier image pour ajouter
-    private File fichierIdentifier;//fichier image pour id
+    @SuppressWarnings("unused")
+	private File fichierIdentifier;//fichier image pour id
     private projet.Image imageTestTemp;
 
     //affiche le nom des fichiers choisis
@@ -121,7 +122,7 @@ public class Client extends Application {
 
         //affiche le nom du fichier choisi
         nomFichierGauche = new Label("Choisir une photo");
-        nomFichierGauche.setStyle("-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 11px;");
+        nomFichierGauche.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11px;");
 
         depotG.getChildren().addAll(plusG, nomFichierGauche);
 
@@ -176,7 +177,7 @@ public class Client extends Application {
             //si il n'y a pas de photos deposée
             if (fichierAjouter == null) {
                 labelRes.setText("choisis une photo !");
-                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
                 return;
             }
 
@@ -188,13 +189,13 @@ public class Client extends Application {
                 database.traiterImages();
             } catch (Exception ex) {
                 labelRes.setText("erreur traitement images");
-                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
                 return;
             }
 
             //pr verif que la personne a bien été ajoutée
             labelRes.setText(prenomVal + " " + nomVal + "\najoutée !");
-            labelRes.setStyle("-fx-text-fill: #2e7d32; -fx-font-size: 18px; -fx-font-weight: bold;");
+            labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
 
             //reset
             nom.clear();
@@ -215,7 +216,7 @@ public class Client extends Application {
         plusD.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 40px; -fx-font-weight: bold;");
 
         nomFichierDroit = new Label("Choisir une photo");
-        nomFichierDroit.setStyle( "-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 11px;");
+        nomFichierDroit.setStyle( "-fx-text-fill: #ffffff; -fx-font-size: 11px;");
         depotD.getChildren().addAll(plusD, nomFichierDroit);
 
         //clic sur la zone de dépôt droite = ouvre l'explorateur de fichier
@@ -237,7 +238,7 @@ public class Client extends Application {
                     imageTestTemp.vectoriser();
                 } catch (IOException ex) {
                     labelRes.setText("impossible de lire l'image");
-                    labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                    labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
                 }
             }
         });
@@ -268,23 +269,22 @@ public class Client extends Application {
         btnIdentifier.setOnAction(e -> {
             if (imageTestTemp == null) { //si ya pas de photo dans le depot
                 labelRes.setText("choisis une photo !");
-                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
                 return;
             }
             if (database.getTaille() == 0) { //si la bdd est vide
                 labelRes.setText("base vide !\nAjoute des personnes d'abord");
-                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
                 return;
             }
 
-            //calcul du seuil et identification
-            double seuil = database.calculT2Alpha(); //seuil statistique
+            //identification
             ReconnaissanceFaciale rf;
             try {
                 rf = new ReconnaissanceFaciale(null, database);
             } catch (IOException ex) {
                 labelRes.setText("erreur initialisation");
-                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
                 return;
             }
             String cheminResultat = rf.identifier(imageTestTemp);
@@ -301,7 +301,7 @@ public class Client extends Application {
                 String prenomTrouve = parties.length > 1 ? parties[1] : ""; //isole le prenom
 
                 labelRes.setText(prenomTrouve + "\n" + nomTrouve);
-                labelRes.setStyle("-fx-text-fill: #2e7d32; -fx-font-size: 26px; -fx-font-weight: bold;");
+                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 26px; -fx-font-weight: bold;");
             }
         });
 
