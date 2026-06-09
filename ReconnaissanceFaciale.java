@@ -28,7 +28,8 @@ public class ReconnaissanceFaciale {
 	
 	/**
      * CONSTRUCTEUR
-     * @param img une image
+     * @param img une image à tester
+	 * @param database est la d
 	 * @throws IOException 
      */
 	public ReconnaissanceFaciale(Database database, Image img, List<Image> baseTest) throws IOException {
