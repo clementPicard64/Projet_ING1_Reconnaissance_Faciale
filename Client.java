@@ -45,7 +45,7 @@ public class Client extends Application {
     public void start(Stage s) {
 
     	//initialisation de la bdd
-        String cheminBase = "database/imagesReference";
+        String cheminBase = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesReference";
         database = new Database(cheminBase);
         try {
             File dossier = new File(cheminBase);
@@ -131,7 +131,7 @@ public class Client extends Application {
             FileChooser fc = new FileChooser();
             fc.setTitle("Choisir une photo à ajouter");
             fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+                new FileChooser.ExtensionFilter("Images", "*.png")
             );
             File choix = fc.showOpenDialog(s);
             if (choix != null) {
@@ -295,13 +295,20 @@ public class Client extends Application {
             } else {
                 //extrait le nom du dossier parent format Nom_Prenom
                 java.io.File f = new java.io.File(cheminResultat);
-                String dossier = f.getParentFile().getName(); 
-                String[] parties = dossier.split("_");
-                String nomTrouve = parties.length > 0 ? parties[0] : dossier; //isole le nom
-                String prenomTrouve = parties.length > 1 ? parties[1] : ""; //isole le prenom
-
-                labelRes.setText(prenomTrouve + "\n" + nomTrouve);
-                labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 26px; -fx-font-weight: bold;");
+                java.io.File parent = f.getParentFile();
+                
+                if (parent == null) {
+                    // chemin sans dossier parent, on affiche le nom brut
+                    labelRes.setText(cheminResultat.replace(".png", ""));
+                    labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 26px; -fx-font-weight: bold;");
+                } else {
+                    String dossier = parent.getName(); 
+                    String[] parties = dossier.split("_");
+                    String nomTrouve = parties.length > 0 ? parties[0] : dossier;
+                    String prenomTrouve = parties.length > 1 ? parties[1] : "";
+                    labelRes.setText(prenomTrouve + "\n" + nomTrouve);
+                    labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 26px; -fx-font-weight: bold;");
+                }
             }
         });
 
