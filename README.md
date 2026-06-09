@@ -18,7 +18,7 @@ Ceci est un tutoriel pour pouvoir utiliser notre reconnaissance faciale
 
 8. Cliquez sur Add External JARS... à droite et puis séléctionnez les deux bibliothèques, puis confirmez avec Apply and Close
 
-9. Dans le Main, modifier les chemins correspondant aux endroits où les images sont stockées
+9. Dans le Main, modifier les chemins correspondant aux endroits où les images sont stockées (6 lignes à modifier)
 
 10. Exécutez
 
