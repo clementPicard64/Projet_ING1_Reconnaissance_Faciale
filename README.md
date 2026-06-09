@@ -1,9 +1,7 @@
 
-#CalculSVD()
+Ceci est un tutoriel pour pouvoir utiliser notre reconnaissance faciale
 
-Ceci est un tutoriel pour utiliser la bibliothèque contenant les fonctions qui servent à la décomposition en valeurs singulières.
-
-1. Téléchargez la bibliothéque en copiant ce lien sur votre navigateur--> https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar
+1. Téléchargez le projet, il y aura normalement les deux bibliothèques nécessaires au lancement
 
 2. Sur votre Compilateur JAVA (Eclipse IDE) allez sur Package Explorer
 
@@ -18,4 +16,10 @@ Ceci est un tutoriel pour utiliser la bibliothèque contenant les fonctions qui 
 	
 7. Appuyez sur ModulePath
 
-8. Cliquez sur Add External JARS... à droite et puis séléctionnez votre librairy, puis confirmez avec Apply and Close
+8. Cliquez sur Add External JARS... à droite et puis séléctionnez les deux bibliothèques, puis confirmez avec Apply and Close
+
+9. Dans le Main, modifier les chemins correspondant aux endroits où les images sont stockées
+
+10. Exécutez
+
+11. Dans le répertoire du projet, il est possible de visualiser le nuage de points des images projetées dans les fichiers excels (créés automatiquement avec la bibliothèque aspose-cells)
