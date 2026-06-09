@@ -162,9 +162,6 @@ public class Matrice {
 		for (int i=0; i<val_sing.length; i++) {
 			denom += val_sing[i]*val_sing[i];
 		}
-		System.out.println(num);
-		System.out.println(denom);
-		System.out.println(num/denom);
 		
 		while (num/denom<var) {
 			k++;
@@ -173,7 +170,7 @@ public class Matrice {
 				num += val_sing[i]*val_sing[i];
 			}
 		}
-		return k;
+		return k-1; //-1 car on manipule des tableaux
 	}
 	
 	public Matrice extraireEigenfaces() {	
@@ -194,7 +191,7 @@ public class Matrice {
 	    //System.out.println(val_sing.length);
 	    int k = determinerK(val_sing);
 	    
-	    System.out.println("Valeurs propres :" + k);
+	    System.out.println("Valeurs propres de 0 à " + k);
 	    
 	    RealMatrix U = svd.getU(); //on récupère la matrice U contenant les vecteurs associés aux vecteurs propres.
 	    
