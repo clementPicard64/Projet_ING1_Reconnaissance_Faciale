@@ -19,11 +19,13 @@ import javafx.scene.layout.Region;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description : IHM
  * @author CandyCelia
- * @version 2.0
+ * @version 4.0
  */
 
 public class Client extends Application {
@@ -33,6 +35,8 @@ public class Client extends Application {
     @SuppressWarnings("unused")
 	private File fichierIdentifier;//fichier image pour id
     private projet.Image imageTestTemp;
+    
+    private List<projet.Image> imagesTestSeuil = new ArrayList<>();
 
     //affiche le nom des fichiers choisis
     private Label nomFichierGauche;
@@ -54,6 +58,23 @@ public class Client extends Application {
                 database.chargerBase(cheminBase);
                 //calcule les eigenfaces
                 database.traiterImages();
+                
+                String cheminSeuil = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesTestSeuil";
+                Database dbSeuil = new Database(cheminSeuil);
+                this.imagesTestSeuil = new ArrayList<>();
+                try {
+                    dbSeuil.chargerBase(cheminSeuil);
+                    for (Personne p : dbSeuil.getListPersonne()) {
+                        for (projet.Image img : p.getListImage()) {
+                            img.redimensionner();
+                            img.convertirEnNiveauDeGris();
+                            img.vectoriser();
+                            imagesTestSeuil.add(img);
+                        }
+                    }
+                } catch (IOException e) {
+                    System.out.println("erreur chargement seuil : " + e.getMessage());
+                }
             } else {
                 System.out.println("dossier base introuvable : " + cheminBase);
             }
@@ -281,7 +302,7 @@ public class Client extends Application {
             //identification
             ReconnaissanceFaciale rf;
             try {
-                rf = new ReconnaissanceFaciale(null, database);
+                rf = new ReconnaissanceFaciale(imagesTestSeuil, database);
             } catch (IOException ex) {
                 labelRes.setText("erreur initialisation");
                 labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
@@ -297,7 +318,7 @@ public class Client extends Application {
                 java.io.File f = new java.io.File(cheminResultat);
                 java.io.File parent = f.getParentFile();
                 
-                if (parent == null) {
+                if (cheminResultat.startsWith("Inconnu")) {
                     // chemin sans dossier parent, on affiche le nom brut
                     labelRes.setText(cheminResultat.replace(".png", ""));
                     labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 26px; -fx-font-weight: bold;");
