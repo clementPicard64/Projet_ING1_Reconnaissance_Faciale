@@ -86,10 +86,10 @@ public class Main {
 
                 if (dossierTest.equals(dossierResultat)) {
                     correct++;
-                    System.out.println("✓ " + nomTest + " -> " + nomResultat);
+                    System.out.println(nomTest + " -> " + nomResultat);
                 } else {
                     mauvaisePersonne++;
-                    System.out.println("✗ " + nomTest + " -> " + nomResultat + " (mauvaise personne)");
+                    System.out.println(nomTest + " -> " + nomResultat + " (mauvaise personne)");
                 }
             }
         }
