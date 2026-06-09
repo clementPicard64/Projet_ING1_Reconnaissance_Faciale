@@ -3,6 +3,8 @@ package projet;
 import java.util.ArrayList;
 import java.util.List;
 import com.aspose.cells.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Description : gère les interactions avec l'utilisateur
@@ -16,47 +18,55 @@ public class ReconnaissanceFaciale {
 	
     /**
      * CONSTRUCTEUR
-	 *
      * @param seuil un double
+     * @throws IOException 
      */
-	public ReconnaissanceFaciale(double seuil, Database database, Worksheet worksheet) {
-		this.seuil = seuil;
+	public ReconnaissanceFaciale(List<Image> baseTest, Database database) throws IOException {
 		this.database = database;
-		this.worksheet = worksheet;
+		this.seuil = evaluerTauxIdentification(baseTest);
 	}
-/*
+	
 	/**
      * CONSTRUCTEUR
-	 *
      * @param img une image
+	 * @throws IOException 
      */
-	public ReconnaissanceFaciale(Image img) {
+	public ReconnaissanceFaciale(Database database, Image img, List<Image> baseTest) throws IOException {
+		this.database = database;
 		this.img = img;
+		this.seuil = evaluerTauxIdentification(baseTest);
 	}
-*/	
+	
+	public ReconnaissanceFaciale(Database database, Worksheet worksheet, List<Image> baseTest) throws IOException {
+		this.database = database;
+		this.worksheet = worksheet;
+		this.seuil = evaluerTauxIdentification(baseTest);
+	}
+	
+	public double getSeuil() {
+		return seuil;
+	}
+	
 	/**
 	 * reconstruire methode qui prend un tableau de double et un entier et retourne un tableau de double
-	 *
 	 * @return un tableau de double
-	 *
 	 * @param vecteurProjete un tableau d'entier
-	 *
 	 * @param K un entier
 	 */
-	public double[] reconstruire(double[] vecteurProjete, int K) {
-		//Matrice V = matrice.extraireEigenfaces(K);
-		Matrice V = database.getEngenfaces().extraireEigenfaces(K);
+	public double[] reconstruire(double[] vecteurProjete){
+		Matrice V = database.getEigenfaces();
 		double[] z_k = new double[V.getM()];
-		for (int i=0; i< V.getM(); i++) {
+		for (int i=0; i< V.getN(); i++) {
 			double somme = 0;
-			for (int j=0; j<K; j++) {
-				somme = somme + vecteurProjete[i]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
+			for (int j=0; j<V.getM(); j++) {
+				somme = somme + vecteurProjete[j]*V.getMatrice()[i].vecteur[j]; //calcul du vecteur
 			}
 			z_k[i] = somme;
 		}
 		return z_k; 
 	}
-
+	
+	
 	/**
 	 * procédure qui initialise / met à jour les valeurs des coordonnées quand on ajoute une image
 	 * @param Z_k un tableau 2D contenant les coordonnées de toutes les images projetées dans la nouvelle base
@@ -105,6 +115,7 @@ public class ReconnaissanceFaciale {
 	    }
 	}
 	
+	
 	/**
 	 * identifier prends une image et regarde si il y a une ressemblance avec les images de la base de donnée
 	 *
@@ -113,34 +124,47 @@ public class ReconnaissanceFaciale {
 	 * @param imageTest est l'Image de comparaison 
 	 */
 	public String identifier(Image imageTest) {
-
 		//Initialise l'image dans les variables de la classe
 		this.img = imageTest;
-
-		//Calcule l'image avec la plus courte distance 
-		Image res = calculerPlusCourtDistance();
 		
-		//Vérifie qu'une imaga à bien été renvoyé
+		
+		if (this.img.getVecteurImage() == null) {
+	        this.img.redimensionner();
+	        this.img.convertirEnNiveauDeGris();
+	        this.img.vectoriser();
+	    }
+		
+		Image res = calculerPlusCourtDistance(); //trouve la plus courte distance
+		
+		//Verifie qu'il retourne bien une valeur
         if (res == null) {
             return "Inconnu";
         }
-
-		//Calcule la distance et la compare au seuil pour voir si on peut la renvoyer ou pas 
-        double distance  = calculeDistance(res.getVecteurImage());
-        if (diffDistanceSeuil(distance)) {
-        	return "Inconnu";
+        
+        //Compare avec la distance de Hottelling
+        if (calculT2(imageTest) >= database.calculT2Alpha()) {
+            return "Inconnu (hors population)";
         }
+        
+        //Verifie si la distance est inferieur au seuil
+        double dmin = calculeDistance(res.getVecteurImage());
+        if (!diffDistanceSeuil(dmin)) { 
+            return "Inconnu (trop distant)";
+        }
+        
         return res.getCheminImage();
 	}
 	
 	/**
 	 * evaluerTauxIdentification prend une liste d'images et renvoie un double. Evalue le seuil de distance nécessaire pour que les images soient reconnues
-	 *
 	 * @return un double (le seuil)
-	 *
 	 * @param baseTest une liste d'images projetées dans la nouvelle base censées être reconnues par notre reconnaissance faciale
+	 * @throws IOException 
 	 */
-	public double evaluerTauxIdentification(List<Image> baseTest) {
+	public double evaluerTauxIdentification(List<Image> baseTest) throws IOException {
+		if (baseTest == null || baseTest.isEmpty()) {
+	        return 0.0; // No test base available yet, seuil will be set later
+	    }
 		double[] dist = new double[baseTest.size()];
 		int i=0;
 		List<Personne> p = null;
@@ -151,7 +175,8 @@ public class ReconnaissanceFaciale {
 		}
 		
 		for (Image I : baseTest) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
-		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(I); //objet pour calculer la distance
+		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(null, this.database); //objet pour calculer la distance
+		    rf.setImg(I);
 		    double minGlobal = -1; //on initialise le minimum global
 		    for (Personne P : p) {
 		        ArrayList<Image> L = ((Personne) P).getListImage(); //on récupère la liste des images par personne
@@ -174,7 +199,11 @@ public class ReconnaissanceFaciale {
 				seuil=dist[j];
 			}
 		}
-		return 1.2*seuil; // erreur anticipée du calcul du seuil de 20%
+		return 1.05*seuil; // erreur anticipée du calcul du seuil de 20%
+	}
+	
+	public void setImg(Image img) {
+	    this.img = img;
 	}
 	
 	/**
@@ -183,32 +212,34 @@ public class ReconnaissanceFaciale {
 	 * @return imagePlusProche un objet image qui correspond à l'image la plus proche de notre image test
 	 */
 	public Image calculerPlusCourtDistance() {
-
+		
 		//Initialisation des varriables
 		double minDistance = -1; //Distance la plus courte
 		Image imagePlusProche = null; //Stock l'image avec la distance la plus courte
-		List<Image> toutesLesImages = new ArrayList<>();//Creation d'un tableau qui stockera toutes les images de notre base de donnée
-
+		List<Image> toutesLesImages = new ArrayList<>(); //Creation d'un tableau qui stockera toutes les images de notre base de donnée
+		
 		//Parcours toutes les personnes et ajoute toutes leurs images dans le tableau d'image toutesLesImages
 		for (Personne personne : database.getListPersonne() ) {
 			toutesLesImages.addAll(personne.getListImage());
 		}
-
+		
 		//Parcours toutes les images de notre liste d'image pour calculer les distances et trouver la plus courte
         for (int i = 0; i < toutesLesImages.size(); i++) {
 
-			//Calcule la distance entre l'image test et l'image i de la liste d'image
+            if (toutesLesImages.get(i).getVecteurImage() == null) continue;
+            
+            //Calcule la distance entre l'image test et l'image i de la liste d'image
             double nouvelleDistance = calculeDistance(toutesLesImages.get(i).getVecteurImage());
 
-			//Si aucune distance rentré ou que la distance est plus petite que celle actuel la remplace
+            //Si aucune distance rentré ou que la distance est plus petite que celle actuel la remplace
             if (minDistance == -1 || nouvelleDistance < minDistance) {
                 minDistance = nouvelleDistance;
                 imagePlusProche = toutesLesImages.get(i);
             }
         }
-
-		//Renvoie l'image
-		return imagePlusProche; 
+        //Renvoie l'image
+        System.out.println(minDistance);
+        return imagePlusProche;
 	}
 	
 	/**
@@ -230,21 +261,45 @@ public class ReconnaissanceFaciale {
 	 * @param vecteur qui est un Vecteur d'une Image
 	 */
 	public double calculeDistance(Vecteur vecteur) {
-
-		//Initialise les variables 
-		double[] vecteurTest = this.img.getVecteurImage().getVecteur(); //Vecteur de l'image test
-		double[] tabVecteur = vecteur.getVecteur(); //Vecteur du vecteur en parametre
-		double somme = 0; //Resultat du calcule
-
+		
+		//Initialise les variables
+		double[] vecteurTest = this.img.getVecteurImage().getVecteur();
+		double[] tabVecteur = vecteur.getVecteur();
+		double somme = 0;
+		
 		//Parcours chaque valeur des deux vecteurs, les soustraits et les mets au carré. Tout en les additionnants à la somme
 		for (int i = 0; i < tabVecteur.length; i++) {
 			somme += Math.pow(vecteurTest[i] - tabVecteur[i], 2);
 		}
-
 		//Fait la racine de la somme
-		somme = Math.sqrt(somme); 
-		
+		somme = Math.sqrt(somme);
 		return somme;
 	}
 
+
+
+	public double calculT2(Image img) {
+	    int k = database.getEigenfaces().getN();
+	    double[] beta = reconstruire(img.getVecteurImage().getVecteur());
+	    double[] sigmas = database.getValeursPropres();
+	
+	    double T2 = 0;
+	    for (int j = 0; j < k; j++) {
+	        double lambda = sigmas[j] * sigmas[j];
+	        T2 += (beta[j] * beta[j]) / lambda;
+	    }
+	    return T2;
+	}
+	
+	public void evaluerSeuilT2(List<Image> baseTest) {
+	    double T2_alpha = database.calculT2Alpha();
+	    int rejetes = 0;
+	    for (Image img : baseTest) {
+	        if (calculT2(img) >= T2_alpha) rejetes++;
+	    }
+	    System.out.println("Seuil T_alpha : " + T2_alpha);
+	    System.out.println("Rejetés : " + rejetes + "/" + baseTest.size());
+	}
+	
+	
 }
