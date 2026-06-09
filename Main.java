@@ -1,99 +1,107 @@
 package projet;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        Vecteur v1 = new Vecteur(new double[]{0, 2, 9,1,2});
-        Vecteur v2 = new Vecteur(new double[]{4, 7, 6,4,0});
-        Vecteur v3 = new Vecteur(new double[]{1,2,3,4,5});
-        Vecteur v4 = new Vecteur(new double[]{2,4,6,8,0});
-
-        Vecteur[] tableauVecteurs = {v1, v2,v3,v4};
-        Matrice matrice = new Matrice(tableauVecteurs);
-
-        System.out.println("MATRICE INITIALE");
-        afficherMatrice(matrice);
         
-        Vecteur visageMoyen = matrice.calculVisageMoyen();
-        System.out.println("\nVISAGE MOYEN");
-        afficherVecteur(visageMoyen);
-        
-
-        Vecteur[] v = matrice.centrerDonnees();
-        Matrice matriceCentree = new Matrice(v);
-
-        System.out.println("\nMATRICE CENTRÉE"); //celia
-        afficherMatrice(matriceCentree);
-
-/*        System.out.println("\n MATRICE DE COVARIANCE DES IMAGES");
-
-
+        Database db = new Database("VOTRECHEMIN/imagesReference"); // chargement base de référence
         try {
-            Matrice covariance = matrice.MatriceCovariance();
-            afficherMatrice(covariance);
-        } catch (Exception e) {
-            System.out.println("Erreur lors du calcul de la covariance : " + e.getMessage());
-        }*/
-        
-        System.out.println("\nVALEURS PROPRES ET EIGENFACES");
+            db.chargerBase("VOTRECHEMIN/imagesReference");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        db.traiterImages(); // vectorise + calcule eigenfaces
+        System.out.println("Nombre d'images de base de référence chargées : " + db.getTaille());
 
+
+        Database dbSeuil = new Database("VOTRECHEMIN/imagesTestSeuil"); // chargement de la base des images de test
         try {
-            Matrice eigenfaces = matrice.extraireEigenfaces(4);
-            afficherMatrice(eigenfaces);
-        } catch (Exception e) {
-            System.out.println("Erreur lors de l'extraction des eigenfaces : " + e.getMessage());
+            dbSeuil.chargerBase("VOTRECHEMIN/imagesTestSeuil");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
+
+        List<Image> imagesTestSeuil = new ArrayList<>();
+        for (Personne p : dbSeuil.getListPersonne()) {  // on récupère toutes les images de test dans une liste
+            for (Image img : p.getListImage()) {
+                img.redimensionner();
+                img.convertirEnNiveauDeGris();
+                img.vectoriser();
+                imagesTestSeuil.add(img);
+            }
+        }
+        System.out.println("Nombre d'images test chargées : " + imagesTestSeuil.size());
+
+
+        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(0.0, db); //calcul du seuil avec la base de seuil
+        double seuil = rfSeuil.evaluerTauxIdentification(imagesTestSeuil);
+        System.out.println("Seuil calculé : " + seuil);
+
+        
+        Database dbValidation = new Database("VOTRECHEMIN/imagesValidation"); // chargement images de validation
+        try {
+            dbValidation.chargerBase("VOTRECHEMIN/imagesValidation");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        List<Image> imagesValidation = new ArrayList<>();
+        for (Personne p : dbValidation.getListPersonne()) {
+            for (Image img : p.getListImage()) {
+                img.redimensionner();
+                img.convertirEnNiveauDeGris();
+                img.vectoriser();
+                imagesValidation.add(img);
+            }
+        }
+        System.out.println("Nombre d'images de validation chargées : " + imagesValidation.size());
+
         
         
-        Database db1 = new Database("/home/cytech/Projet/base_images");
-		try {
-			db1.chargerBase("/home/cytech/Projet/base_images");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		db1.getListPersonne();
-		db1.getListNomImage();
-		db1.traiterImages(); 
-		
-		try {
-			Image img = new Image("/home/cytech/Projet/imagesAjoutComparaison/im2.png");
-			img.redimensionner();
-			img.convertirEnNiveauDeGris();
-			img.vectoriser();
-			ReconnaissanceFaciale rf = new ReconnaissanceFaciale(db1,img);
-			System.out.println(rf.identifier(img));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
+        //test de la reconnaissance faciale
+        ReconnaissanceFaciale rf = new ReconnaissanceFaciale(seuil, db);
 
-    public static void afficherVecteur(Vecteur v) {
+        int correct = 0;
+        int mauvaisePersonne = 0;
+        int inconnu = 0;
+        int total = imagesValidation.size();
 
-        double[] tab = v.getVecteur();
+        for (Image img : imagesValidation) {
+            String resultat = rf.identifier(img);
+            File fTest = new File(img.getCheminImage()); // on extrait nom_prenom_n de l'image testée pour comparer les noms reconnus
+            String nomTest = fTest.getName().replace(".png", "");
 
-        System.out.print("[ ");
+            if (resultat.startsWith("Inconnu")) {
+                inconnu++;
+                System.out.println(nomTest + " -> " + resultat);
+            } else {
+                File fResultat = new File(resultat);
+                String nomResultat = fResultat.getName().replace(".png", ""); // "faure_paul_5"
+                String dossierTest = fTest.getParentFile().getName();
+                String dossierResultat = fResultat.getParentFile().getName();
 
-        for (double valeur : tab) {
-            System.out.print(valeur + " ");
+                if (dossierTest.equals(dossierResultat)) {
+                    correct++;
+                    System.out.println("✓ " + nomTest + " -> " + nomResultat);
+                } else {
+                    mauvaisePersonne++;
+                    System.out.println("✗ " + nomTest + " -> " + nomResultat + " (mauvaise personne)");
+                }
+            }
         }
-
-        System.out.println("]");
+        System.out.println("Total images testées : " + total);
+        System.out.println("Personnes correctement reconnues : " + correct);
+        System.out.println("Personnes mal reconnues : " + mauvaisePersonne);
+        System.out.println("Personnes inconnues : " + inconnu);
+        System.out.println("Taux de reconnaissance : " + String.format("%.2f", correct * 100.0 / total) + "%");
+        rf.evaluerSeuilT2(imagesTestSeuil);
     }
-
-
-    public static void afficherMatrice(Matrice m) {
-
-        Vecteur[] lignes = m.getMatrice();
-
-        for (Vecteur v : lignes) {
-            afficherVecteur(v);
-        }
-    }
-  
-    
-    
-    
-    
 }
