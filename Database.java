@@ -321,7 +321,7 @@ public class Database {
     }
 	
 	public double calculT2Alpha() {
-		double alpha = 0.05;
+		double alpha = 0.95;
 	    int k = eigenfaces.getN();  // nombre d'eigenfaces retenues
 	    int n = taille;             // nombre d'images d'apprentissage
 
