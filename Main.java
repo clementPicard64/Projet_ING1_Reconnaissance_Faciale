@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        String chemin = "VOTRECHEMIN"; // Mettre votre chemin où sont les images ici
+        String chemin = "/home/cytech/eclipse-workspace/projet"; // Mettre votre chemin où sont les images ici
 
         Database db = new Database(chemin + "/imagesReference");
         try {
@@ -40,9 +40,8 @@ public class Main {
         }
         System.out.println("Nombre d'images test chargées : " + imagesTestSeuil.size());
 
-        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(0.0, db);
-        double seuil = rfSeuil.evaluerTauxIdentification(imagesTestSeuil);
-        System.out.println("Seuil calculé : " + seuil);
+        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(imagesTestSeuil, db);
+        System.out.println("Seuil calculé : " + rfSeuil.getSeuil());
 
         Database dbValidation = new Database(chemin + "/imagesValidation");
         try {
@@ -63,7 +62,7 @@ public class Main {
         }
         System.out.println("Nombre d'images de validation chargées : " + imagesValidation.size());
 
-        ReconnaissanceFaciale rf = new ReconnaissanceFaciale(seuil, db);
+        ReconnaissanceFaciale rf = new ReconnaissanceFaciale(imagesTestSeuil, db);
 
         int correct = 0;
         int mauvaisePersonne = 0;
@@ -86,10 +85,10 @@ public class Main {
 
                 if (dossierTest.equals(dossierResultat)) {
                     correct++;
-                    System.out.println(nomTest + " -> " + nomResultat);
+                    System.out.println("✓ " + nomTest + " -> " + nomResultat);
                 } else {
                     mauvaisePersonne++;
-                    System.out.println(nomTest + " -> " + nomResultat + " (mauvaise personne)");
+                    System.out.println("✗ " + nomTest + " -> " + nomResultat + " (mauvaise personne)");
                 }
             }
         }
@@ -99,6 +98,7 @@ public class Main {
         System.out.println("Personnes mal reconnues : " + mauvaisePersonne);
         System.out.println("Personnes inconnues : " + inconnu);
         System.out.println("Taux de reconnaissance : " + String.format("%.2f", correct * 100.0 / total) + "%");
+        System.out.println("Seuil : "+rf.getSeuil() );
         rf.evaluerSeuilT2(imagesTestSeuil);
     }
 }
