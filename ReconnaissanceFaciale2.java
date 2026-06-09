@@ -44,7 +44,6 @@ public class ReconnaissanceFaciale {
 	 * @param K un entier
 	 */
 	public double[] reconstruire(double[] vecteurProjete){
-		//Matrice V = matrice.extraireEigenfaces(K);
 		Matrice V = database.getEigenfaces();
 		double[] z_k = new double[V.getM()];
 		for (int i=0; i< V.getN(); i++) {
@@ -56,6 +55,8 @@ public class ReconnaissanceFaciale {
 		}
 		return z_k; 
 	}
+	
+	
 	
 	
 	/**
@@ -113,21 +114,27 @@ public class ReconnaissanceFaciale {
 	 * @param imageTest une image
 	 */
 	public String identifier(Image imageTest) {
-		
 		this.img = imageTest;
-		this.img.redimensionner();
-		this.img.convertirEnNiveauDeGris();
-		this.img.vectoriser();
+		if (this.img.getVecteurImage() == null) {
+	        this.img.redimensionner();
+	        this.img.convertirEnNiveauDeGris();
+	        this.img.vectoriser();
+	    }
 		
 		Image res = calculerPlusCourtDistance();
 
         if (res == null) {
             return "Inconnu";
         }
-        double distance  = calculeDistance(res.getVecteurImage());
-        /*if (diffDistanceSeuil(distance)) {
-        	return "Inconnu";
-        }*/
+        
+        if (calculT2(imageTest) >= database.calculT2Alpha()) {
+            return "Inconnu (hors population)";
+        }
+        
+        double dmin = calculeDistance(res.getVecteurImage());
+        if (!diffDistanceSeuil(dmin)) { 
+            return "Inconnu (trop distant)";
+        }
         return res.getCheminImage();
 	}
 	
@@ -172,7 +179,7 @@ public class ReconnaissanceFaciale {
 				seuil=dist[j];
 			}
 		}
-		return 1.2*seuil; // erreur anticipée du calcul du seuil de 20%
+		return 1.05*seuil; // erreur anticipée du calcul du seuil de 5%
 	}
 	
 	/**
@@ -189,11 +196,6 @@ public class ReconnaissanceFaciale {
 			toutesLesImages.addAll(personne.getListImage());
 		}
 		
-		for (Image img : toutesLesImages) {
-			img.redimensionner();
-			img.convertirEnNiveauDeGris();
-			img.vectoriser();
-		}
 		
         for (int i = 0; i < toutesLesImages.size(); i++) {
 
@@ -206,16 +208,8 @@ public class ReconnaissanceFaciale {
                 imagePlusProche = toutesLesImages.get(i);
             }
         }
-
-		return imagePlusProche;
-	}
-	
-	/**
-	 * diffDistanceSeuil retourne un booleen
-	 * @return vrai ou faux
-	 */
-	public Boolean diffDistanceSeuil(double distance) {
-        return distance < this.seuil;
+        System.out.println(minDistance);
+        return imagePlusProche;
 	}
 	
 	/**
@@ -234,6 +228,39 @@ public class ReconnaissanceFaciale {
 		}
 		somme = Math.sqrt(somme);
 		return somme;
+	}
+	
+	
+	/**
+	 * diffDistanceSeuil retourne un booleen
+	 * @return vrai ou faux
+	 */
+	public Boolean diffDistanceSeuil(double distance) {
+        return distance <= this.seuil;
+	}
+	
+	
+	public double calculT2(Image img) {
+	    int k = database.getEigenfaces().getN();
+	    double[] beta = reconstruire(img.getVecteurImage().getVecteur());
+	    double[] sigmas = database.getValeursPropres();
+
+	    double T2 = 0;
+	    for (int j = 0; j < k; j++) {
+	        double lambda = sigmas[j] * sigmas[j];
+	        T2 += (beta[j] * beta[j]) / lambda;
+	    }
+	    return T2;
+	}
+
+	public void evaluerSeuilT2(List<Image> baseTest) {
+	    double T2_alpha = database.calculT2Alpha();
+	    int rejetes = 0;
+	    for (Image img : baseTest) {
+	        if (calculT2(img) >= T2_alpha) rejetes++;
+	    }
+	    System.out.println("Seuil T_alpha : " + T2_alpha);
+	    System.out.println("Rejetés : " + rejetes + "/" + baseTest.size());
 	}
 
 }
