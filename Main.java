@@ -8,28 +8,29 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        
-        Database db = new Database("VOTRECHEMIN/imagesReference"); // chargement base de référence
+
+        String chemin = "VOTRECHEMIN"; // Mettre votre chemin où sont les images ici
+
+        Database db = new Database(chemin + "/imagesReference");
         try {
-            db.chargerBase("VOTRECHEMIN/imagesReference");
+            db.chargerBase(chemin + "/imagesReference");
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        db.traiterImages(); // vectorise + calcule eigenfaces
+        db.traiterImages();
         System.out.println("Nombre d'images de base de référence chargées : " + db.getTaille());
 
-
-        Database dbSeuil = new Database("VOTRECHEMIN/imagesTestSeuil"); // chargement de la base des images de test
+        Database dbSeuil = new Database(chemin + "/imagesTestSeuil");
         try {
-            dbSeuil.chargerBase("VOTRECHEMIN/imagesTestSeuil");
+            dbSeuil.chargerBase(chemin + "/imagesTestSeuil");
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
 
         List<Image> imagesTestSeuil = new ArrayList<>();
-        for (Personne p : dbSeuil.getListPersonne()) {  // on récupère toutes les images de test dans une liste
+        for (Personne p : dbSeuil.getListPersonne()) {
             for (Image img : p.getListImage()) {
                 img.redimensionner();
                 img.convertirEnNiveauDeGris();
@@ -39,15 +40,13 @@ public class Main {
         }
         System.out.println("Nombre d'images test chargées : " + imagesTestSeuil.size());
 
-
-        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(0.0, db); //calcul du seuil avec la base de seuil
+        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(0.0, db);
         double seuil = rfSeuil.evaluerTauxIdentification(imagesTestSeuil);
         System.out.println("Seuil calculé : " + seuil);
 
-        
-        Database dbValidation = new Database("VOTRECHEMIN/imagesValidation"); // chargement images de validation
+        Database dbValidation = new Database(chemin + "/imagesValidation");
         try {
-            dbValidation.chargerBase("VOTRECHEMIN/imagesValidation");
+            dbValidation.chargerBase(chemin + "/imagesValidation");
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -64,9 +63,6 @@ public class Main {
         }
         System.out.println("Nombre d'images de validation chargées : " + imagesValidation.size());
 
-        
-        
-        //test de la reconnaissance faciale
         ReconnaissanceFaciale rf = new ReconnaissanceFaciale(seuil, db);
 
         int correct = 0;
@@ -76,7 +72,7 @@ public class Main {
 
         for (Image img : imagesValidation) {
             String resultat = rf.identifier(img);
-            File fTest = new File(img.getCheminImage()); // on extrait nom_prenom_n de l'image testée pour comparer les noms reconnus
+            File fTest = new File(img.getCheminImage());
             String nomTest = fTest.getName().replace(".png", "");
 
             if (resultat.startsWith("Inconnu")) {
@@ -84,7 +80,7 @@ public class Main {
                 System.out.println(nomTest + " -> " + resultat);
             } else {
                 File fResultat = new File(resultat);
-                String nomResultat = fResultat.getName().replace(".png", ""); // "faure_paul_5"
+                String nomResultat = fResultat.getName().replace(".png", "");
                 String dossierTest = fTest.getParentFile().getName();
                 String dossierResultat = fResultat.getParentFile().getName();
 
@@ -97,6 +93,7 @@ public class Main {
                 }
             }
         }
+
         System.out.println("Total images testées : " + total);
         System.out.println("Personnes correctement reconnues : " + correct);
         System.out.println("Personnes mal reconnues : " + mauvaisePersonne);
