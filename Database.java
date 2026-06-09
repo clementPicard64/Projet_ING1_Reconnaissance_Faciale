@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList; //Ajout Clément
 import java.util.List;
 
+import org.apache.commons.math3.distribution.FDistribution;
+
 import com.aspose.cells.*;
 
 /**
@@ -122,6 +124,16 @@ public class Database {
 	    return eigenfaces;
 	}
 	
+	
+	/**
+     * GETTER valeurs propres
+     * @return valeursPropres
+     */
+	public double[] getValeursPropres() {
+		// TODO Auto-generated method stub
+		return valeursPropres;
+	}
+	
 	/**
 	 * getMatriceTotal méthode construit une mat a partir de tous les vecteurs des images
 	 * @return une Matrice qui contient tous les vecteursImages
@@ -138,37 +150,6 @@ public class Database {
 	    return m;
 	}
 	
-	/**
-	 * projeterImage méthode qui prends une image en parametre et retourne un tableau de double
-	 * @return un tableau de double
-	 * @param img une image
-	 */
-	//MAJ DANS LE DIAGRAMME
-	//calcule coordonnées d'une image dans le sous espace de eigenface via prod scalaire
-	public double[] projeterImage(Image img) {
-		Vecteur v = img.getVecteurImage(); //recup le vect de img
-		double[] tab = new double[eigenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
-		int i = 0;
-		
-		for (Vecteur e : eigenfaces.getMatrice()) {//ppur chauqe eigenface dans eigenfaces.getMatrice()
-			tab[i] = e.produitScalaire(v); //stocker chaque prod scalaire du vect img dans le tab
-			i++;
-		}
-	    return tab;
-	}
-	
-	/**
-	 * projeterMatrice méthode qui prends toutes les images de la base en parametre et retourne un tableau de double
-	 */
-	public void projeterMatrice() {
-		projections = new double[taille][]; //initialiser projections
-		int index = 0;
-		
-		for (Image i : images) { //pour chaque image 
-			projections[index] = projeterImage(i); 
-			index++;
-		}
-	}
 	
 	/**
 	 * ajouterNouvellePersonne méthode qui ajoute une personne et son image a la base
@@ -247,21 +228,19 @@ public class Database {
 			this.vecteurs_image[cpt] = v;
 		}
 		this.matriceTotal = new Matrice(this.vecteurs_image);
-		this.eigenfaces = this.matriceTotal.extraireEigenfaces(9);
-		//afficherMatrice(eigenfaces);
+		this.eigenfaces = this.matriceTotal.extraireEigenfaces();
+		this.valeursPropres = this.matriceTotal.getValSing();
 		//verifOrthogonalite(eigenfaces);
-		double[][] mat = new double[n][9];
+		//afficherMatrice(eigenfaces);
+		int nb_val = this.matriceTotal.getValSing().length;
+		double[][] mat = new double[n][nb_val];
 		int cpt1 = -1;
 		for (Image img : this.images) {
 			cpt1 += 1;
 			ReconnaissanceFaciale rc = new ReconnaissanceFaciale(this, img);
-			mat[cpt1] = rc.reconstruire(img.getVecteurImage().getVecteur(), 9);
-			for (double d : mat[cpt1]) {
-				System.out.print(" | "+ d);
-			}
-			System.out.println("");
+			mat[cpt1] = rc.reconstruire(img.getVecteurImage().getVecteur());
 		}
-		
+		this.projections = mat;
 		Workbook workbook = new Workbook();
 
 	    int index = workbook.getWorksheets().add();
@@ -280,7 +259,21 @@ public class Database {
 	        e.printStackTrace();
 	    }
 	}
+	
 
+	
+	public double calculT2Alpha() {
+		double alpha = 0.05;
+	    int k = eigenfaces.getN();  // nombre d'eigenfaces retenues
+	    int n = taille;             // nombre d'images d'apprentissage
+
+	    FDistribution fisher = new FDistribution(k, n-k); // quantile de la loi de Fisher F(K, n-K) 1-alpha
+	    double quantileFisher = fisher.inverseCumulativeProbability(1-alpha);
+
+	    return ((double) k*(n-1))/(n-k)*quantileFisher; //formule seuil théorique
+	}
+	
+	
 	/**
 	 * methode qui affiche les résultats des produits scalaires des eigenfaces entre elles
 	 * @param eigenfaces matrice des eigenfaces
@@ -296,6 +289,7 @@ public class Database {
 	        }
 	    }
 	}
+	
 	
 	//Verif
 	public static void afficherVecteur(Vecteur v) {
@@ -319,6 +313,7 @@ public class Database {
             afficherVecteur(v);
         }
     }
+
 
 	/*
 	//Verif
