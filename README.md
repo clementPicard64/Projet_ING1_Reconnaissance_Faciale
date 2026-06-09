@@ -1,7 +1,7 @@
 
 Ceci est un tutoriel pour pouvoir utiliser notre reconnaissance faciale
 
-1. Téléchargez le projet, il y aura normalement les deux bibliothèques nécessaires au lancement (sans compter celles pour l'IHM)
+1. Téléchargez le projet, il y aura normalement 10 bibliothèques nécessaires au lancement.
 
 2. Sur votre Compilateur JAVA (Eclipse IDE) allez sur Package Explorer
 
