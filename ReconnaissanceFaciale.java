@@ -6,9 +6,11 @@ import com.aspose.cells.*;
 import java.io.File;
 import java.io.IOException;
 
+
 /**
  * Description : gère les interactions avec l'utilisateur
  */
+@SuppressWarnings("unused")
 public class ReconnaissanceFaciale {
 	
 	private double seuil;
@@ -28,8 +30,7 @@ public class ReconnaissanceFaciale {
 	
 	/**
      * CONSTRUCTEUR
-     * @param img une image à tester
-	 * @param database est la d
+     * @param img une image
 	 * @throws IOException 
      */
 	public ReconnaissanceFaciale(Database database, Image img, List<Image> baseTest) throws IOException {
@@ -127,6 +128,7 @@ public class ReconnaissanceFaciale {
 	public String identifier(Image imageTest) {
 		//Initialise l'image dans les variables de la classe
 		this.img = imageTest;
+		System.out.print(this.getSeuil()+ "\n");
 		
 		
 		if (this.img.getVecteurImage() == null) {
@@ -143,13 +145,13 @@ public class ReconnaissanceFaciale {
         }
         
         //Compare avec la distance de Hottelling
-        if (calculT2(imageTest) >= database.calculT2Alpha()) {
+        /*if (calculT2(imageTest) >= database.calculT2Alpha()) {
             return "Inconnu (hors population)";
-        }
+        }*/
         
         //Verifie si la distance est inferieur au seuil
         double dmin = calculeDistance(res.getVecteurImage());
-        if (!diffDistanceSeuil(dmin)) { 
+        if (diffDistanceSeuil(dmin)) { 
             return "Inconnu (trop distant)";
         }
         
@@ -251,7 +253,7 @@ public class ReconnaissanceFaciale {
 	 * @return un boolean qui est vrai si la distance est plus petite que le seuil et Faux si la distance est plus grande ou égale.
 	 */
 	public Boolean diffDistanceSeuil(double distance) {
-        return distance < this.seuil;
+        return distance > this.seuil;
 	}
 	
 	/**
