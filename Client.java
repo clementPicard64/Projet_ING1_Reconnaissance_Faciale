@@ -15,8 +15,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.IOException;
@@ -186,7 +184,13 @@ public class Client extends Application {
             database.ajouterNouvellePersonne(nomVal, prenomVal, fichierAjouter);
 
             //recalcul des eigenfaces avec la nouvelle image
-            database.traiterImages();
+            try {
+                database.traiterImages();
+            } catch (Exception ex) {
+                labelRes.setText("erreur traitement images");
+                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                return;
+            }
 
             //pr verif que la personne a bien été ajoutée
             labelRes.setText(prenomVal + " " + nomVal + "\najoutée !");
@@ -275,7 +279,14 @@ public class Client extends Application {
 
             //calcul du seuil et identification
             double seuil = database.calculT2Alpha(); //seuil statistique
-            ReconnaissanceFaciale rf = new ReconnaissanceFaciale(seuil, database, null);
+            ReconnaissanceFaciale rf;
+            try {
+                rf = new ReconnaissanceFaciale(null, database);
+            } catch (IOException ex) {
+                labelRes.setText("erreur initialisation");
+                labelRes.setStyle("-fx-text-fill: #cc0000; -fx-font-size: 18px; -fx-font-weight: bold;");
+                return;
+            }
             String cheminResultat = rf.identifier(imageTestTemp);
 
             if (cheminResultat.equals("Inconnu")) { //si on trouve rien de similaire
