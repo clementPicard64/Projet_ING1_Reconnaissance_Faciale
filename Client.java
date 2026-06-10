@@ -50,7 +50,7 @@ public class Client extends Application {
     public void start(Stage s) {
 
     	//initialisation de la bdd
-        String cheminBase = "/home/cytech/Projet/imagesReference";
+        String cheminBase = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesReference";
         database = new Database(cheminBase);
         try {
             File dossier = new File(cheminBase);
@@ -60,7 +60,7 @@ public class Client extends Application {
                 //calcule les eigenfaces
                 database.traiterImages();
                 
-                String cheminSeuil = "/home/cytech/Projet/imagesTestSeuil";
+                String cheminSeuil = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesTestSeuil";
                 Database dbSeuil = new Database(cheminSeuil);
                 this.imagesTestSeuil = new ArrayList<>();
                 try {
@@ -77,7 +77,7 @@ public class Client extends Application {
                     System.out.println("erreur chargement seuil : " + e.getMessage());
                 }
 
-                String cheminInconnu = "/home/cytech/Projet/imagesInconnu";
+                String cheminInconnu = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesInconnu";
                 Database dbInconnu = new Database(cheminInconnu);
                 this.imagesInconnu = new ArrayList<>();
                 try {
