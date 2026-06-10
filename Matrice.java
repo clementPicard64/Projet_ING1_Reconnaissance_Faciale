@@ -155,7 +155,7 @@ public class Matrice {
 	
 	
 	public int determinerK(double[] val_sing) {
-		double var=0.9;
+		double var=0.95;
 		int k=1;
 		double num = val_sing[0]*val_sing[0];
 		double denom = 0;
