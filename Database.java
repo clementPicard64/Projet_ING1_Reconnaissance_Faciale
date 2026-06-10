@@ -2,7 +2,7 @@ package projet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList; //Ajout Clément
+import java.util.ArrayList; 
 import java.util.List;
 
 import org.apache.commons.math3.distribution.FDistribution;
