@@ -7,9 +7,14 @@ import java.util.List;
 
 public class Main {
 
+    /**
+     * Méthode qui charge les bases d'images (référence, seuil, inconnues, validation), calcule les seuils theta_d et T^2, puis évalue les performances de la reconnaissance faciale en affichant le taux de reconnaissance, le nombre de mauvaises identifications et le nombre d'inconnus.
+     * @param args arguments de la ligne de commande (non utilisés)
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
-
-        String chemin = "/home/cytech/eclipse-workspace/projet"; // Mettre votre chemin où sont les images ici
+    	
+        String chemin = "/home/cytech/Projet"; // Mettre votre chemin où sont les images ici
 
         Database db = new Database(chemin + "/imagesReference");
         try {
@@ -40,9 +45,30 @@ public class Main {
         }
         System.out.println("Nombre d'images test chargées : " + imagesTestSeuil.size());
 
-        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(imagesTestSeuil, db);
-        System.out.println("Seuil calculé : " + rfSeuil.getSeuil());
 
+        
+        Database dbInconnues = new Database(chemin + "/imagesInconnu");
+        try {
+            dbInconnues.chargerBase(chemin + "/imagesInconnu");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        List<Image> imagesInconnues = new ArrayList<>();
+        for (Personne p : dbInconnues.getListPersonne()) {
+            for (Image img : p.getListImage()) {
+                img.redimensionner();
+                img.convertirEnNiveauDeGris();
+                img.vectoriser();
+                imagesInconnues.add(img);
+            }
+        }
+        System.out.println("Nombre d'images inconnues chargées : " + imagesInconnues.size());
+        
+        ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(imagesTestSeuil, imagesInconnues, db);
+        System.out.println("Seuil calculé : " + rfSeuil.getSeuil());
+        
         Database dbValidation = new Database(chemin + "/imagesValidation");
         try {
             dbValidation.chargerBase(chemin + "/imagesValidation");
@@ -62,7 +88,7 @@ public class Main {
         }
         System.out.println("Nombre d'images de validation chargées : " + imagesValidation.size());
 
-        ReconnaissanceFaciale rf = new ReconnaissanceFaciale(imagesTestSeuil, db);
+        ReconnaissanceFaciale rf = new ReconnaissanceFaciale(imagesTestSeuil, imagesInconnues, db);
 
         int correct = 0;
         int mauvaisePersonne = 0;
@@ -85,10 +111,10 @@ public class Main {
 
                 if (dossierTest.equals(dossierResultat)) {
                     correct++;
-                    System.out.println("✓ " + nomTest + " -> " + nomResultat);
+                    System.out.println(nomTest + " -> " + nomResultat);
                 } else {
                     mauvaisePersonne++;
-                    System.out.println("✗ " + nomTest + " -> " + nomResultat + " (mauvaise personne)");
+                    System.out.println(nomTest + " -> " + nomResultat + " (mauvaise personne)");
                 }
             }
         }
