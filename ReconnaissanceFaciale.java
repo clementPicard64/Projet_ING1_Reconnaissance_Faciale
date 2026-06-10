@@ -180,7 +180,10 @@ public class ReconnaissanceFaciale {
 	 */
 	public double evaluerTauxIdentification(List<Image> baseConnue, List<Image> baseInconnue) throws IOException {
 		if (baseConnue == null || baseConnue.isEmpty()) {
-	        return 0.0; // databse invalide, le seuil sera défini plus tard
+	        return 0.0;
+	    }
+		if (baseInconnue == null || baseInconnue.isEmpty()) {
+	        return 0.0;
 	    }
 		double[] dist1 = new double[baseConnue.size()];
 		int i=0;
@@ -232,10 +235,12 @@ public class ReconnaissanceFaciale {
 		    dist2[i] = minGlobal; //on stocke la distance minimale pour cette image de test
 		    i++;
 		}
-		double seuilConnus = Arrays.stream(dist1).average().getAsDouble();
-		double seuilInconnus = Arrays.stream(dist2).average().getAsDouble();
+		double seuilConnus = Arrays.stream(dist1).average().orElse(0.0);
+		double seuilInconnus = Arrays.stream(dist2).average().orElse(0.0);
+		if (dist1.length == 0) return seuilInconnus;
+		if (dist2.length == 0) return seuilConnus;
 		double seuil = (seuilConnus + seuilInconnus) / 2;
-		return seuil; // moyenne des deux
+		return seuil;
 	}
 	
 	/**
