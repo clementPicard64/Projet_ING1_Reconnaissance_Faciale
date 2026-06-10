@@ -1,25 +1,17 @@
+Voici le code source du Projet.
+Il faudra s'assurer que vous possedez le librairie JavaFX (un guide est mis a diposition).
+Les deux autres librairies se trouvent dans ce dossier.
+Pour les configurer : 
+1. Sélectionnez votre projet 
 
-Ceci est un tutoriel pour pouvoir utiliser notre reconnaissance faciale
+2. Appuyez sur propriétés (properties)
 
-1. Téléchargez le projet, il y aura normalement 10 bibliothèques nécessaires au lancement.
+3. Dans la barre de gauche appuyez sur  Java Build Path
 
-2. Sur votre Compilateur JAVA (Eclipse IDE) allez sur Package Explorer
-
-3. Sélectionnez votre projet 
-
-4. Appuyez sur propriétés (properties)
-
-5. Dans la barre de gauche appuyez sur  Java Build Path
-
-6. Une page apparaît avec une barre en haut qui contient plusieurs options,
-   Appuyez sur libraries
+4. Une page apparaît avec une barre en haut qui contient plusieurs options, appuyez sur libraries
 	
-7. Appuyez sur ModulePath
+5. Appuyez sur ModulePath
 
-8. Cliquez sur Add External JARS... à droite et puis séléctionnez les deux bibliothèques, puis confirmez avec Apply and Close
+6. Cliquez sur Add External JARS... à droite et puis séléctionnez les deux bibliothèques, puis confirmez avec Apply and Close
 
-9. Dans le Main, modifier le chemin correspondant à l'endroit où les dossiers d'images sont stockées (ligne 12)
-
-10. Exécutez
-
-11. Dans le répertoire du projet, il est possible de visualiser le nuage de points des images projetées dans les fichiers excels (créés automatiquement avec la bibliothèque aspose-cells)
+Dans le répertoire du projet, il est possible de visualiser le nuage de points des images projetées dans les fichiers excels (créés automatiquement avec la bibliothèque aspose-cells)
