@@ -76,7 +76,7 @@ public class Image {
      * @author Clément
      * Procédure permettant de vectoriser la matrice (transformation en vecteur colonne) (4eme et dernière etape)
      * 
-     */f
+     */
     public void vectoriser() {
     	int cpt = 0;
     	double[] tab = new double[10304];
