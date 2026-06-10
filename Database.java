@@ -229,7 +229,6 @@ public class Database {
 	    Personne personne = null;
 	    
 	    if (!dossier.exists()) {
-	        dossier.mkdirs(); //On crée le dossier
 		    //On créé la personne
 		    personne = new Personne(nom,prenom);
 		    p.add(personne); //ajoute la personne a la liste
