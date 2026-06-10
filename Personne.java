@@ -126,5 +126,20 @@ public class Personne {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Cette fct permet de charger une nouvelle image en creant une nouvelle image 
+	 * 
+	 * @param img est un File 
+	*/
+	public void chargerImage(File img) {
+		try {
+			Image image = new Image(img.getAbsolutePath()); //creer un objet image 
+			this.listImage.add(image);
+		}catch (IOException e) {
+			System.err.println("Impossible de lire l'image");
+			e.printStackTrace();
+		}
+	}
 
 }
