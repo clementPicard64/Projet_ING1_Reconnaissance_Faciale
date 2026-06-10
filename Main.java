@@ -14,7 +14,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
     	
-        String chemin = "/home/cytech/Projet"; // Mettre votre chemin où sont les images ici
+        String chemin = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet"; // Mettre votre chemin où sont les images ici
 
         Database db = new Database(chemin + "/imagesReference");
         try {
