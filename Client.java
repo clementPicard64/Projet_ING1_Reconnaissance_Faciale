@@ -50,55 +50,64 @@ public class Client extends Application {
     public void start(Stage s) {
 
     	//initialisation de la bdd
-        String cheminBase = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesReference";
-        database = new Database(cheminBase);
-        try {
-            File dossier = new File(cheminBase);
-            if (dossier.exists()) {
-            	//charge les images existantes
-                database.chargerBase(cheminBase);
-                //calcule les eigenfaces
-                database.traiterImages();
-                
-                String cheminSeuil = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesTestSeuil";
-                Database dbSeuil = new Database(cheminSeuil);
-                this.imagesTestSeuil = new ArrayList<>();
-                try {
-                    dbSeuil.chargerBase(cheminSeuil);
-                    for (Personne p : dbSeuil.getListPersonne()) {
-                        for (projet.Image img : p.getListImage()) {
-                            img.redimensionner();
-                            img.convertirEnNiveauDeGris();
-                            img.vectoriser();
-                            imagesTestSeuil.add(img);
-                        }
-                    }
-                } catch (IOException e) {
-                    System.out.println("erreur chargement seuil : " + e.getMessage());
-                }
+    	String cheminBase;
+    	try {
+    	    java.net.URL location = Client.class.getProtectionDomain().getCodeSource().getLocation();
+    	    java.io.File jarFile = new java.io.File(location.toURI());
+    	    String dossierJar = jarFile.getParentFile().getAbsolutePath();
+    	    cheminBase = dossierJar + "/imagesReference";
+    	} catch (Exception ex) {
+    	    cheminBase = "imagesReference"; // fallback
+    	}
 
-                String cheminInconnu = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesInconnu";
-                Database dbInconnu = new Database(cheminInconnu);
-                this.imagesInconnu = new ArrayList<>();
-                try {
-                    dbInconnu.chargerBase(cheminInconnu);
-                    for (Personne p : dbInconnu.getListPersonne()) {
-                        for (projet.Image img : p.getListImage()) {
-                            img.redimensionner();
-                            img.convertirEnNiveauDeGris();
-                            img.vectoriser();
-                            imagesInconnu.add(img);
-                        }
-                    }
-                } catch (IOException e) {
-                    System.out.println("erreur chargement inconnus : " + e.getMessage());
-                }
-            } else {
-                System.out.println("dossier base introuvable : " + cheminBase);
-            }
-        } catch (IOException e) {
-            System.out.println("erreur chargement base : " + e.getMessage());
-        }
+    	database = new Database(cheminBase);
+    	try {
+    	    File dossier = new File(cheminBase);
+    	    if (dossier.exists()) {
+    	        database.chargerBase(cheminBase);
+    	        database.traiterImages();
+
+    	        String dossierJar2 = new File(cheminBase).getParent();
+
+    	        String cheminSeuil = dossierJar2 + "/imagesTestSeuil";
+    	        Database dbSeuil = new Database(cheminSeuil);
+    	        this.imagesTestSeuil = new ArrayList<>();
+    	        try {
+    	            dbSeuil.chargerBase(cheminSeuil);
+    	            for (Personne p : dbSeuil.getListPersonne()) {
+    	                for (projet.Image img : p.getListImage()) {
+    	                    img.redimensionner();
+    	                    img.convertirEnNiveauDeGris();
+    	                    img.vectoriser();
+    	                    imagesTestSeuil.add(img);
+    	                }
+    	            }
+    	        } catch (IOException e) {
+    	            System.out.println("erreur chargement seuil : " + e.getMessage());
+    	        }
+
+    	        String cheminInconnu = dossierJar2 + "/imagesInconnu";
+    	        Database dbInconnu = new Database(cheminInconnu);
+    	        this.imagesInconnu = new ArrayList<>();
+    	        try {
+    	            dbInconnu.chargerBase(cheminInconnu);
+    	            for (Personne p : dbInconnu.getListPersonne()) {
+    	                for (projet.Image img : p.getListImage()) {
+    	                    img.redimensionner();
+    	                    img.convertirEnNiveauDeGris();
+    	                    img.vectoriser();
+    	                    imagesInconnu.add(img);
+    	                }
+    	            }
+    	        } catch (IOException e) {
+    	            System.out.println("erreur chargement inconnus : " + e.getMessage());
+    	        }
+    	    } else {
+    	        System.out.println("dossier base introuvable : " + cheminBase);
+    	    }
+    	} catch (IOException e) {
+    	    System.out.println("erreur chargement base : " + e.getMessage());
+    	}
 
         //visuel
         VBox structureGlobale = new VBox();
@@ -396,4 +405,3 @@ public class Client extends Application {
         launch(args);
     }
 }
-
