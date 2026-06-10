@@ -352,7 +352,6 @@ public class ReconnaissanceFaciale {
 	        if (calculT2(img) >= T2_alpha) rejetes++;
 	    }
 	    System.out.println("Seuil T_alpha : " + T2_alpha);
-	    System.out.println("Rejetés : " + rejetes + "/" + baseTest.size());
 	}
 	
 	
