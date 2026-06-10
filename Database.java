@@ -78,7 +78,7 @@ public class Database {
                 if (fichiersImages != null) {
                     for (File fichierImg : fichiersImages) {
                         if (fichierImg.isFile()) {
-                            personne.ajouterImage(fichierImg);
+                            personne.chargerImage(fichierImg);
                             ArrayList<Image> imgs = personne.getListImage();
                             listeTemporaireImages.add(imgs.get(imgs.size()-1));
                         }
