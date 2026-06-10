@@ -25,7 +25,7 @@ public class Personne {
 	public Personne(String nom, String prenom) {
 		this.nom = nom;
 		this.prenom = prenom;
-		this.cheminPersonne = "database/" + nom + "_" + prenom;
+		this.cheminPersonne = "imagesReference/" + nom + "_" + prenom;
 		this.listImage = new ArrayList<Image>();
 	}
 
@@ -106,7 +106,7 @@ public class Personne {
 			//On s'assure que le dossier de la personne existe physiquement
 	        File dossierCible = new File(this.getCheminPersonne());
 	        if (!dossierCible.exists()) {
-	            dossierCible.mkdirs(); // Crée le dossier "database/Dupont_Jean" s'il n'existe pas
+	            dossierCible.mkdirs(); // Crée le dossier "imagesReference/Dupont_Jean" s'il n'existe pas
 	        }
 
 	        //Création du nouveau nom du fichier
