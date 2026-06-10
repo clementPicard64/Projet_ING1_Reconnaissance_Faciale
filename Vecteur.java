@@ -2,7 +2,7 @@ package projet;
 
 public class Vecteur {
 	
-	double[] vecteur;
+	private double[] vecteur;
 	
 	public  Vecteur(int dimension) {
 		this.vecteur = new double[dimension];
