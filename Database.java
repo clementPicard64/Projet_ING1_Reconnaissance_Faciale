@@ -18,7 +18,6 @@ public class Database {
 	private String cheminBaseReference;
 	private String cheminBaseTest;
 	private int taille;
-	@SuppressWarnings("unused")
 	private double[] valeursPropres; //MODIFIER DANS LE DIAGRAMME
 	//POUR STOCKER LES IMAGES DE LA BASE
 	private Image[] images; //MODIFIER DANS LE DIAGRAMME
@@ -26,9 +25,7 @@ public class Database {
 	private double[][] projections; //MODIFIER DANS LE DIAGRAMME
 	
 	private Matrice eigenfaces;
-	@SuppressWarnings("unused")
 	private Matrice matriceTotal;
-	@SuppressWarnings("unused")
 	private Vecteur visageMoyen;
 	private List<Personne> p;
 	
@@ -109,6 +106,10 @@ public class Database {
 		return cheminBaseReference;
 	}
 	
+	/**
+	 * GETTER cheminBaseTest
+	 * @return chaine de caractère cheminBaseTest
+	 */
 	public String getCheminTest() {
 		return cheminBaseTest;
 	}
@@ -156,25 +157,47 @@ public class Database {
 	}
 	
 	/**
-	 * projeterImage méthode qui prends une image en parametre et retourne un tableau de double
-	 * @return un tableau de double
-	 * @param img une image
+	 * GETTER visageMoyen
+	 * @return visageMoyen le vecteur moyen de la base d'apprentissage
 	 */
-	//MAJ DANS LE DIAGRAMME
-	public double[] projeterImage(Image img) {
-		Vecteur v = img.getVecteurImage(); //recup le vect de img
-		double[] tab = new double[eigenfaces.getN()]; //creer un  tab de taille nb de eigenfaces
+	public Vecteur getVisageMoyen() {
+		return visageMoyen;
+	}
+
+	/**
+	 * projeterVecteur projette un vecteur brut dans l'espace ACP (après centrage)
+	 * @param v le vecteur brut à projeter
+	 * @return tableau de coordonnées dans la base ACP
+	 */
+	public double[] projeterVecteur(Vecteur v) {
+		// Centrage : on soustrait le visage moyen
+		double[] vCentre = v.getVecteur().clone();
+		double[] moy = visageMoyen.getVecteur();
+		for (int j = 0; j < vCentre.length; j++) {
+			vCentre[j] -= moy[j];
+		}
+		Vecteur vecteurCentre = new Vecteur(vCentre);
+
+		double[] tab = new double[eigenfaces.getN()];
 		int i = 0;
-		
-		for (Vecteur e : eigenfaces.getMatrice()) {//ppur chauqe eigenface dans eigenfaces.getMatrice()
-			tab[i] = e.produitScalaire(v); //stocker chaque prod scalaire du vect img dans le tab
+		for (Vecteur e : eigenfaces.getMatrice()) {
+			tab[i] = e.produitScalaire(vecteurCentre);
 			i++;
 		}
-	    return tab;
+		return tab;
+	}
+
+	/**
+	 * projeterImage projette une image dans l'espace ACP (après centrage)
+	 * @param img l'image à projeter
+	 * @return tableau de coordonnées dans la base ACP
+	 */
+	public double[] projeterImage(Image img) {
+		return projeterVecteur(img.getVecteurImage());
 	}
 	
 	/**
-	 * projeterMatrice méthode qui prends toutes les images de la base en parametre et retourne un tableau de double
+	 * projeterMatrice projette toutes les images de la base dans l'espace ACP et stocke leurs coordonnées dans le tableau projections
 	 */
 	public void projeterMatrice() {
 		projections = new double[taille][]; //initialiser projections
@@ -187,9 +210,10 @@ public class Database {
 	}
 	
 	/**
-	 * ajouterNouvellePersonne méthode qui ajoute une personne et son image a la base
-	 * @param p une personne 
-	 * @param une image
+	 * ajouterNouvellePersonne ajoute une personne et son image à la base. Si la personne existe déjà, l'image est simplement ajoutée à son dossier existant.
+	 * @param nom le nom de la personne à ajouter
+	 * @param prenom le prénom de la personne à ajouter
+	 * @param img le fichier image à associer à la personne
 	 */
 	public void ajouterNouvellePersonne(String nom, String prenom, File img) {
 		if (p == null) { // Si c'est la premiere personne de la base d'images 
@@ -231,12 +255,18 @@ public class Database {
 		
 	}
 	
+	/**
+	 * getListNomPersonne affiche dans la console le nom et prénom de chaque personne de la base
+	 */
 	//Verif 
 	public void getListNomPersonne() {
 		for (Personne pers : this.p) {
 			System.out.println(pers.getNom() + "_" + pers.getPrenom());
 		}
 	}
+	/**
+	 * getListNomImage affiche dans la console l'identifiant de chaque image de la base
+	 */
 	//Verif
 	public void getListNomImage() {
 		for (Image img : this.images) {
@@ -251,6 +281,10 @@ public class Database {
 		
 	}*/
 	
+	/**
+	 * traiterImages redimensionne, convertit en niveaux de gris et vectorise toutes les images de la base, puis calcule le visage moyen, extrait les eigenfaces, projette toutes les images dans la nouvelle base et génère un fichier Excel contenant le nuage de points des projections.
+	 * @throws IOException
+	 */
 	//Ajout traiter toutes les images pour les transformer en vecteurs puis pour y faire les opérations mathématiques
 	public void traiterImages() throws IOException {
 		int n = images.length;
@@ -265,6 +299,7 @@ public class Database {
 			this.vecteurs_image[cpt] = v;
 		}
 		this.matriceTotal = new Matrice(this.vecteurs_image);
+		this.visageMoyen = this.matriceTotal.calculVisageMoyen(); // sauvegarde du visage moyen pour centrer lors des projections
 		this.eigenfaces = this.matriceTotal.extraireEigenfaces();
 		this.valeursPropres = this.matriceTotal.getValSing();
 		//verifOrthogonalite(eigenfaces);
@@ -274,7 +309,7 @@ public class Database {
 		int cpt1 = -1;
 		for (Image img : this.images) {
 			cpt1 += 1;
-			ReconnaissanceFaciale rc = new ReconnaissanceFaciale(this, img, null);
+			ReconnaissanceFaciale rc = new ReconnaissanceFaciale(this, img, null, null);
 			mat[cpt1] = rc.reconstruire(img.getVecteurImage().getVecteur());
 		}
 		this.projections = mat;
@@ -284,7 +319,7 @@ public class Database {
 	    Worksheet sheet = workbook.getWorksheets().get(index);
 	    sheet.setName("Projection");
 
-	    ReconnaissanceFaciale rcExcel = new ReconnaissanceFaciale(this, sheet, null);
+	    ReconnaissanceFaciale rcExcel = new ReconnaissanceFaciale(this, sheet, null, null);
 
 	    rcExcel.miseAJourWorksheet(mat);    // on remplit la feuille Excel
 
@@ -297,6 +332,10 @@ public class Database {
 	    }
 	}
 	
+	/**
+	 * afficherVecteur affiche dans la console toutes les valeurs d'un vecteur sous forme de tableau.
+	 * @param v le Vecteur à afficher
+	 */
 	//Verif
 	public static void afficherVecteur(Vecteur v) {
 
@@ -311,6 +350,10 @@ public class Database {
         System.out.println("]");
     }
 	
+	/**
+	 * afficherMatrice affiche dans la console chaque vecteur ligne d'une Matrice.
+	 * @param m la Matrice à afficher
+	 */
 	public static void afficherMatrice(Matrice m) {
 
         Vecteur[] lignes = m.getMatrice();
@@ -320,6 +363,10 @@ public class Database {
         }
     }
 	
+	/**
+	 * calculT2Alpha calcule le seuil théorique T^2_alpha de la statistique de Hotelling à partir d'un quantile de la loi de Fisher F(k, n-k) au niveau de confiance 1-alpha.
+	 * @return un double représentant le seuil T^2_alpha
+	 */
 	public double calculT2Alpha() {
 		double alpha = 0.95;
 	    int k = eigenfaces.getN();  // nombre d'eigenfaces retenues
@@ -330,9 +377,4 @@ public class Database {
 
 	    return ((double) k*(n-1))/(n-k)*quantileFisher; //formule seuil théorique
 	}
-	
-}
-		
-	}*/
-	
 }
