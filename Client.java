@@ -1,5 +1,4 @@
 package projet;
-package projet;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
