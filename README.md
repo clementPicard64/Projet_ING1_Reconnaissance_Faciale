@@ -1,5 +1,5 @@
 Voici le code source du Projet.
-Il faudra s'assurer que vous possedez le librairie JavaFX (un guide est mis a diposition).
+Il faudra s'assurer que vous possedez le librairie JavaFX (un guide est mis a diposition) et que les bases d'images soient décompréssées.
 Les deux autres librairies se trouvent dans ce dossier.
 Pour les configurer : 
 1. Sélectionnez votre projet 
