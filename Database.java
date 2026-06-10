@@ -224,7 +224,7 @@ public class Database {
 		    newImages[i] = images[i]; //on met tous les elements de images[] dans le nouveaux tab
 		}
 		// Création du dossier de la personne - Ajout Clement
-		String chemin = "/home/cytech/Projet/" + nom + "_" + prenom; //On créé le chemin
+		String chemin = this.cheminBaseReference + "/" + nom + "_" + prenom;
 	    File dossier = new File(chemin); 
 	    Personne personne = null;
 	    
