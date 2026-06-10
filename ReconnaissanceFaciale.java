@@ -1,16 +1,14 @@
 package projet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.aspose.cells.*;
-import java.io.File;
 import java.io.IOException;
 
-
 /**
- * Description : gère les interactions avec l'utilisateur
+ * Description : gère la reconnaissance faciale, le calcul des seuils et l'identification des images
  */
-@SuppressWarnings("unused")
 public class ReconnaissanceFaciale {
 	
 	private double seuil;
@@ -19,41 +17,58 @@ public class ReconnaissanceFaciale {
 	private Worksheet worksheet;
 	
     /**
-     * CONSTRUCTEUR
-     * @param seuil un double
-     * @throws IOException 
+     * CONSTRUCTEUR utilisé pour calculer le seuil theta_d à partir des deux bases
+     * @param baseConnue liste d'images censées être reconnues par la base de référence
+     * @param baseInconnue liste d'images inconnues (non présentes dans la base de référence)
+     * @param database la base de données de référence
+     * @throws IOException
      */
-	public ReconnaissanceFaciale(List<Image> baseTest, Database database) throws IOException {
+	public ReconnaissanceFaciale(List<Image> baseConnue,List<Image> baseInconnue, Database database) throws IOException {
 		this.database = database;
-		this.seuil = evaluerTauxIdentification(baseTest);
+		this.seuil = evaluerTauxIdentification(baseConnue, baseInconnue);
 	}
 	
 	/**
-     * CONSTRUCTEUR
-     * @param img une image
-	 * @throws IOException 
+     * CONSTRUCTEUR utilisé pour identifier une image spécifique
+     * @param database la base de données de référence
+     * @param img l'image à identifier
+     * @param baseConnue liste d'images censées être reconnues (pour le calcul du seuil theta_d)
+     * @param baseInconnue liste d'images inconnues (pour le calcul du seuil theta_d)
+	 * @throws IOException
      */
-	public ReconnaissanceFaciale(Database database, Image img, List<Image> baseTest) throws IOException {
+	public ReconnaissanceFaciale(Database database, Image img, List<Image> baseConnue,List<Image> baseInconnue) throws IOException {
 		this.database = database;
 		this.img = img;
-		this.seuil = evaluerTauxIdentification(baseTest);
+		this.seuil = evaluerTauxIdentification(baseConnue, baseInconnue);
 	}
 	
-	public ReconnaissanceFaciale(Database database, Worksheet worksheet, List<Image> baseTest) throws IOException {
+	/**
+	 * CONSTRUCTEUR utilisé pour générer le nuage de points dans une feuille Excel
+	 * @param database la base de données de référence
+	 * @param worksheet la feuille Excel dans laquelle les projections seront écrites
+	 * @param baseConnue liste d'images censées être reconnues (pour le calcul du seuil theta_d)
+	 * @param baseInconnue liste d'images inconnues (pour le calcul du seuil theta_d)
+	 * @throws IOException
+	 */
+	public ReconnaissanceFaciale(Database database, Worksheet worksheet, List<Image> baseConnue,List<Image> baseInconnue) throws IOException {
 		this.database = database;
 		this.worksheet = worksheet;
-		this.seuil = evaluerTauxIdentification(baseTest);
+		this.worksheet = worksheet;
+		this.seuil = evaluerTauxIdentification(baseConnue, baseInconnue);
 	}
 	
+	/**
+	 * GETTER seuil
+	 * @return seuil le seuil de distance theta_d calculé à partir des bases connue et inconnue
+	 */
 	public double getSeuil() {
 		return seuil;
 	}
 	
 	/**
-	 * reconstruire methode qui prend un tableau de double et un entier et retourne un tableau de double
-	 * @return un tableau de double
-	 * @param vecteurProjete un tableau d'entier
-	 * @param K un entier
+	 * reconstruire projette un vecteur image dans l'espace des eigenfaces et retourne ses coordonnées
+	 * @param vecteurProjete un tableau de double représentant le vecteur de l'image à projeter
+	 * @return z_k un tableau de double contenant les coordonnées dans la base des eigenfaces
 	 */
 	public double[] reconstruire(double[] vecteurProjete){
 		Matrice V = database.getEigenfaces();
@@ -128,8 +143,6 @@ public class ReconnaissanceFaciale {
 	public String identifier(Image imageTest) {
 		//Initialise l'image dans les variables de la classe
 		this.img = imageTest;
-		System.out.print(this.getSeuil()+ "\n");
-		
 		
 		if (this.img.getVecteurImage() == null) {
 	        this.img.redimensionner();
@@ -145,13 +158,13 @@ public class ReconnaissanceFaciale {
         }
         
         //Compare avec la distance de Hottelling
-        /*if (calculT2(imageTest) >= database.calculT2Alpha()) {
+        if (calculT2(imageTest) >= database.calculT2Alpha()) {
             return "Inconnu (hors population)";
-        }*/
+        }
         
         //Verifie si la distance est inferieur au seuil
         double dmin = calculeDistance(res.getVecteurImage());
-        if (diffDistanceSeuil(dmin)) { 
+        if (!diffDistanceSeuil(dmin)) { 
             return "Inconnu (trop distant)";
         }
         
@@ -159,16 +172,17 @@ public class ReconnaissanceFaciale {
 	}
 	
 	/**
-	 * evaluerTauxIdentification prend une liste d'images et renvoie un double. Evalue le seuil de distance nécessaire pour que les images soient reconnues
-	 * @return un double (le seuil)
-	 * @param baseTest une liste d'images projetées dans la nouvelle base censées être reconnues par notre reconnaissance faciale
-	 * @throws IOException 
+	 * evaluerTauxIdentification évalue le seuil de distance theta_d optimal comme moyenne entre la distance minimale moyenne des images connues et celle des images inconnues
+	 * @param baseConnue liste d'images censées être reconnues par la base de référence
+	 * @param baseInconnue liste d'images inconnues (non présentes dans la base de référence)
+	 * @return un double représentant le seuil theta_d calculé (0.0 si la base connue est vide)
+	 * @throws IOException
 	 */
-	public double evaluerTauxIdentification(List<Image> baseTest) throws IOException {
-		if (baseTest == null || baseTest.isEmpty()) {
-	        return 0.0; // No test base available yet, seuil will be set later
+	public double evaluerTauxIdentification(List<Image> baseConnue, List<Image> baseInconnue) throws IOException {
+		if (baseConnue == null || baseConnue.isEmpty()) {
+	        return 0.0; // databse invalide, le seuil sera défini plus tard
 	    }
-		double[] dist = new double[baseTest.size()];
+		double[] dist1 = new double[baseConnue.size()];
 		int i=0;
 		List<Personne> p = null;
 		try {
@@ -177,8 +191,8 @@ public class ReconnaissanceFaciale {
 			e.printStackTrace();
 		}
 		
-		for (Image I : baseTest) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
-		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(null, this.database); //objet pour calculer la distance
+		for (Image I : baseConnue) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
+		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(null,null, this.database); //objet pour calculer la distance
 		    rf.setImg(I);
 		    double minGlobal = -1; //on initialise le minimum global
 		    for (Personne P : p) {
@@ -193,18 +207,41 @@ public class ReconnaissanceFaciale {
 		            minGlobal = min; //on garde le minimum toutes personnes confondues
 		        }
 		    }
-		    dist[i] = minGlobal; //on stocke la distance minimale pour cette image de test
+		    dist1[i] = minGlobal; //on stocke la distance minimale pour cette image de test
 		    i++;
 		}
-		double seuil=dist[0]; //on cherche le seuil le plus grand
-		for (int j=0; j<i; j++) {
-			if (dist[j] > seuil){
-				seuil=dist[j];
-			}
+		
+		double[] dist2 = new double[baseInconnue.size()];
+		i=0;
+		for (Image I : baseInconnue) { // triple boucle pour chercher la distance maximale parmi les distances minimales entre toutes les images de la base test et les images de la base de données
+		    ReconnaissanceFaciale rf = new ReconnaissanceFaciale(null,null, this.database); //objet pour calculer la distance
+		    rf.setImg(I);
+		    double minGlobal = -1; //on initialise le minimum global
+		    for (Personne P : p) {
+		        ArrayList<Image> L = ((Personne) P).getListImage(); //on récupère la liste des images par personne
+		        double min = rf.calculeDistance(L.get(0).getVecteurImage()); //on définit le minimum au premier élément
+		        for (Image J : ((Personne) P).getListImage()) { //boucle sur toutes les images
+		            if (min > rf.calculeDistance(J.getVecteurImage())) {
+		                min = rf.calculeDistance(J.getVecteurImage()); //on met à jour le minimum
+		            }
+		        }
+		        if (minGlobal == -1 || min < minGlobal) {
+		            minGlobal = min; //on garde le minimum toutes personnes confondues
+		        }
+		    }
+		    dist2[i] = minGlobal; //on stocke la distance minimale pour cette image de test
+		    i++;
 		}
-		return 1.05*seuil; // erreur anticipée du calcul du seuil de 20%
+		double seuilConnus = Arrays.stream(dist1).average().getAsDouble();
+		double seuilInconnus = Arrays.stream(dist2).average().getAsDouble();
+		double seuil = (seuilConnus + seuilInconnus) / 2;
+		return seuil; // moyenne des deux
 	}
 	
+	/**
+	 * SETTER img
+	 * @param img l'image à affecter comme image courante de comparaison
+	 */
 	public void setImg(Image img) {
 	    this.img = img;
 	}
@@ -253,7 +290,7 @@ public class ReconnaissanceFaciale {
 	 * @return un boolean qui est vrai si la distance est plus petite que le seuil et Faux si la distance est plus grande ou égale.
 	 */
 	public Boolean diffDistanceSeuil(double distance) {
-        return distance > this.seuil;
+        return distance < this.seuil;
 	}
 	
 	/**
@@ -281,6 +318,11 @@ public class ReconnaissanceFaciale {
 
 
 
+	/**
+	 * calculT2 calcule la statistique de Hotelling T^2 d'une image dans l'espace des eigenfaces
+	 * @param img l'image dont on souhaite calculer la statistique T^2
+	 * @return T2 un double représentant la valeur de la statistique de Hotelling
+	 */
 	public double calculT2(Image img) {
 	    int k = database.getEigenfaces().getN();
 	    double[] beta = reconstruire(img.getVecteurImage().getVecteur());
@@ -294,6 +336,10 @@ public class ReconnaissanceFaciale {
 	    return T2;
 	}
 	
+	/**
+	 * evaluerSeuilT2 affiche le seuil T^2_alpha et le nombre d'images rejetées parmi la base de test
+	 * @param baseTest liste d'images sur lesquelles évaluer le seuil T^2
+	 */
 	public void evaluerSeuilT2(List<Image> baseTest) {
 	    double T2_alpha = database.calculT2Alpha();
 	    int rejetes = 0;
