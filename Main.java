@@ -1,12 +1,12 @@
 package projet;
-
+ 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+ 
 public class Main {
-
+ 
     /**
      * Méthode qui charge les bases d'images (référence, seuil, inconnues, validation), calcule les seuils theta_d et T^2, puis évalue les performances de la reconnaissance faciale en affichant le taux de reconnaissance, le nombre de mauvaises identifications et le nombre d'inconnus.
      * @param args arguments de la ligne de commande (non utilisés)
@@ -14,26 +14,33 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
     	
-        String chemin = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet"; // Mettre votre chemin où sont les images ici
-
-        Database db = new Database(chemin + "/imagesReference");
+        String dossierJar;
         try {
-            db.chargerBase(chemin + "/imagesReference");
+            java.net.URL location = Main.class.getProtectionDomain().getCodeSource().getLocation();
+            java.io.File jarFile = new java.io.File(location.toURI());
+            dossierJar = jarFile.getParentFile().getAbsolutePath();
+        } catch (Exception ex) {
+            dossierJar = "."; // fallback au dossier courant
+        }
+ 
+        Database db = new Database(dossierJar + "/imagesReference");
+        try {
+            db.chargerBase(dossierJar + "/imagesReference");
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
         db.traiterImages();
         System.out.println("Nombre d'images de base de référence chargées : " + db.getTaille());
-
-        Database dbSeuil = new Database(chemin + "/imagesTestSeuil");
+ 
+        Database dbSeuil = new Database(dossierJar + "/imagesTestSeuil");
         try {
-            dbSeuil.chargerBase(chemin + "/imagesTestSeuil");
+            dbSeuil.chargerBase(dossierJar + "/imagesTestSeuil");
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-
+ 
         List<Image> imagesTestSeuil = new ArrayList<>();
         for (Personne p : dbSeuil.getListPersonne()) {
             for (Image img : p.getListImage()) {
@@ -44,17 +51,17 @@ public class Main {
             }
         }
         System.out.println("Nombre d'images test chargées : " + imagesTestSeuil.size());
-
-
+ 
+ 
         
-        Database dbInconnues = new Database(chemin + "/imagesInconnu");
+        Database dbInconnues = new Database(dossierJar + "/imagesInconnu");
         try {
-            dbInconnues.chargerBase(chemin + "/imagesInconnu");
+            dbInconnues.chargerBase(dossierJar + "/imagesInconnu");
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-
+ 
         List<Image> imagesInconnues = new ArrayList<>();
         for (Personne p : dbInconnues.getListPersonne()) {
             for (Image img : p.getListImage()) {
@@ -69,14 +76,14 @@ public class Main {
         ReconnaissanceFaciale rfSeuil = new ReconnaissanceFaciale(imagesTestSeuil, imagesInconnues, db);
         System.out.println("Seuil calculé : " + rfSeuil.getSeuil());
         
-        Database dbValidation = new Database(chemin + "/imagesValidation");
+        Database dbValidation = new Database(dossierJar + "/imagesValidation");
         try {
-            dbValidation.chargerBase(chemin + "/imagesValidation");
+            dbValidation.chargerBase(dossierJar + "/imagesValidation");
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-
+ 
         List<Image> imagesValidation = new ArrayList<>();
         for (Personne p : dbValidation.getListPersonne()) {
             for (Image img : p.getListImage()) {
@@ -87,19 +94,19 @@ public class Main {
             }
         }
         System.out.println("Nombre d'images de validation chargées : " + imagesValidation.size());
-
+ 
         ReconnaissanceFaciale rf = new ReconnaissanceFaciale(imagesTestSeuil, imagesInconnues, db);
-
+ 
         int correct = 0;
         int mauvaisePersonne = 0;
         int inconnu = 0;
         int total = imagesValidation.size();
-
+ 
         for (Image img : imagesValidation) {
             String resultat = rf.identifier(img);
             File fTest = new File(img.getCheminImage());
             String nomTest = fTest.getName().replace(".png", "");
-
+ 
             if (resultat.startsWith("Inconnu")) {
                 inconnu++;
                 System.out.println(nomTest + " -> " + resultat);
@@ -108,7 +115,7 @@ public class Main {
                 String nomResultat = fResultat.getName().replace(".png", "");
                 String dossierTest = fTest.getParentFile().getName();
                 String dossierResultat = fResultat.getParentFile().getName();
-
+ 
                 if (dossierTest.equals(dossierResultat)) {
                     correct++;
                     System.out.println(nomTest + " -> " + nomResultat);
@@ -118,7 +125,7 @@ public class Main {
                 }
             }
         }
-
+ 
         System.out.println("Total images testées : " + total);
         System.out.println("Personnes correctement reconnues : " + correct);
         System.out.println("Personnes mal reconnues : " + mauvaisePersonne);
