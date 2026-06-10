@@ -37,6 +37,7 @@ public class Client extends Application {
     private projet.Image imageTestTemp;
     
     private List<projet.Image> imagesTestSeuil = new ArrayList<>();
+    private List<projet.Image> imagesInconnu = new ArrayList<>();
 
     //affiche le nom des fichiers choisis
     private Label nomFichierGauche;
@@ -49,7 +50,7 @@ public class Client extends Application {
     public void start(Stage s) {
 
     	//initialisation de la bdd
-        String cheminBase = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesReference";
+        String cheminBase = "/home/cytech/Projet/imagesReference";
         database = new Database(cheminBase);
         try {
             File dossier = new File(cheminBase);
@@ -59,7 +60,7 @@ public class Client extends Application {
                 //calcule les eigenfaces
                 database.traiterImages();
                 
-                String cheminSeuil = "/home/cytech/Desktop/CYTECH/projetReconnaissanceFaciale/projet/imagesTestSeuil";
+                String cheminSeuil = "/home/cytech/Projet/imagesTestSeuil";
                 Database dbSeuil = new Database(cheminSeuil);
                 this.imagesTestSeuil = new ArrayList<>();
                 try {
@@ -74,6 +75,23 @@ public class Client extends Application {
                     }
                 } catch (IOException e) {
                     System.out.println("erreur chargement seuil : " + e.getMessage());
+                }
+
+                String cheminInconnu = "/home/cytech/Projet/imagesInconnu";
+                Database dbInconnu = new Database(cheminInconnu);
+                this.imagesInconnu = new ArrayList<>();
+                try {
+                    dbInconnu.chargerBase(cheminInconnu);
+                    for (Personne p : dbInconnu.getListPersonne()) {
+                        for (projet.Image img : p.getListImage()) {
+                            img.redimensionner();
+                            img.convertirEnNiveauDeGris();
+                            img.vectoriser();
+                            imagesInconnu.add(img);
+                        }
+                    }
+                } catch (IOException e) {
+                    System.out.println("erreur chargement inconnus : " + e.getMessage());
                 }
             } else {
                 System.out.println("dossier base introuvable : " + cheminBase);
@@ -302,7 +320,7 @@ public class Client extends Application {
             //identification
             ReconnaissanceFaciale rf;
             try {
-                rf = new ReconnaissanceFaciale(imagesTestSeuil, database);
+                rf = new ReconnaissanceFaciale(imagesTestSeuil, imagesInconnu, database);
             } catch (IOException ex) {
                 labelRes.setText("erreur initialisation");
                 labelRes.setStyle("-fx-text-fill: #ff7c90; -fx-font-size: 18px; -fx-font-weight: bold;");
